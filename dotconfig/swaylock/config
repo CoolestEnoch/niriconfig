@@ -1,0 +1,53 @@
+# 背景设置
+color=000000
+image=~/Pictures/wallpaper/wallpaper_lock.png
+scaling=fill
+
+# 或者使用纯色背景
+# color=1e1e2e
+
+# 指示器设置
+indicator-radius=100
+indicator-thickness=7
+indicator-caps-lock
+
+# 环形指示器颜色
+ring-color=313244
+ring-clear-color=f5e0dc
+ring-caps-lock-color=fab387
+ring-ver-color=89b4fa
+ring-wrong-color=f38ba8
+
+# 内部圆圈颜色
+inside-color=1e1e2e
+inside-clear-color=1e1e2e
+inside-caps-lock-color=1e1e2e
+inside-ver-color=1e1e2e
+inside-wrong-color=1e1e2e
+
+# 分隔线颜色
+separator-color=00000000
+
+# 文本颜色
+text-color=cdd6f4
+text-clear-color=f5e0dc
+text-caps-lock-color=fab387
+text-ver-color=89b4fa
+text-wrong-color=f38ba8
+
+# 按键反馈
+bs-hl-color=f38ba8
+key-hl-color=a6e3a1
+
+# 布局
+layout-text-color=cdd6f4
+layout-bg-color=00000000
+
+# 其他设置
+font=CaskaydiaCove Nerd Font
+font-size=24
+line-uses-ring
+# disable-caps-lock-text
+indicator-caps-lock
+show-failed-attempts
+

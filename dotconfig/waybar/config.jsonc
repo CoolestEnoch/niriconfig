@@ -1,0 +1,236 @@
+{
+  "layer": "top",
+  "position": "top",
+  "height": 32,
+  "spacing": 0,
+  "modules-left": [
+    "hyprland/workspaces",
+    "custom/lock",
+    "custom/suspend",
+    "custom/reboot",
+    "custom/power",
+    "tray",
+    "wlr/taskbar"
+  ],
+  "modules-center": [
+    "hyprland/window"
+  ],
+  "modules-right": [
+    "network",
+    "battery",
+    "power-profiles-daemon",
+    "bluetooth",
+    "pulseaudio",
+    "backlight",
+    "custom/temperature",
+    "custom/zramswap",
+    "memory",
+    "cpu",
+    "custom/notification",
+    "custom/weather",
+    "clock"
+  ],
+  "hyprland/workspaces": {
+    "disable-scroll": false,
+    "all-outputs": true,
+    "format": "{icon}",
+    "on-click": "activate",
+    "persistent-workspaces": {
+      "*": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ]
+    },
+    "format-icons": {
+      "1": "󰣇",
+      "2": "󰈹",
+      "3": "󰇮",
+      "4": "",
+      "5": "",
+      "6": "",
+      "7": "",
+      "8": "",
+      "9": "󰖳",
+      "default": ""
+    }
+  },
+  "wlr/taskbar": {
+    "format": "{icon}",
+    "tooltip": true,
+    "tooltip-format": "{title}",
+    "on-click": "activate",
+    "on-click-middle": "close",
+    "active-first": true
+  },
+  "custom/lock": {
+    "format": "<span color='#00FFFF'>  </span>",
+    "on-click": "swaylock & sleep 5 && niri msg action power-off-monitors",
+    "tooltip": true,
+    "tooltip-format": "锁屏"
+  },
+  "custom/suspend": {
+    "format": "<span color='#FFD700'>💤</span>",
+    "on-click": "swaylock & systemctl suspend",
+    "tooltip": true,
+    "tooltip-format": "休眠"
+  },
+  "custom/reboot": {
+    "format": "<span color='#FFD700'>  </span>",
+    "on-click": "systemctl reboot",
+    "tooltip": true,
+    "tooltip-format": "重启"
+  },
+  "custom/power": {
+    "format": "<span color='#FF4040'>  </span>",
+    "on-click": "systemctl poweroff",
+    "tooltip": true,
+    "tooltip-format": "关机"
+  },
+  "network": {
+    "format-wifi": " <span color='#00FFFF'> 󰤨 </span>{essid}",
+    "format-ethernet": " <span color='#7FFF00'> </span>Wired",
+    "tooltip-format": "<span color='#FF1493'> 󰅧 </span>{bandwidthUpBytes}  <span color='#00BFFF'> 󰅢 </span>{bandwidthDownBytes}",
+    "format-linked": "<span color='#FFA500'> 󱘖 </span>{ifname} (No IP) ",
+    "format-disconnected": "<span color='#FF4040'>  </span>Disconnected ",
+    "format-alt": "<span color='#00FFFF'> 󰤨 </span>{signalStrength}% ",
+    "interval": 1
+  },
+  "battery": {
+    "states": {
+      "warning": 30,
+      "critical": 15
+    },
+    "format": "<span color='#28CD41'> {icon} </span>{capacity}% ",
+    "format-charging": " 󱐋{capacity}%",
+    "interval": 5,
+    "format-icons": [
+      "󰂎",
+      "󰁼",
+      "󰁿",
+      "󰂁",
+      "󰁹"
+    ],
+    "tooltip": true
+  },
+  "power-profiles-daemon": {
+    "format": "{icon}",
+    "tooltip-format": "Power profile: {profile}\nDriver: {driver}",
+    "tooltip": true,
+    "format-icons": {
+      "default": " Dft",
+      "performance": " Fst",
+      "balanced": " Bal",
+      "power-saver": " Sve"
+    }
+  },
+  "bluetooth": {
+    "format": "<span color='#00BFFF'>  </span>{status}",
+    "format-connected": "<span color='#00BFFF'>  </span>{device_alias}",
+    "format-connected-battery": "<span color='#00BFFF'>  </span>{device_alias} {device_battery_percentage}%",
+    "tooltip-format": "{controller_alias}\t{controller_address}\n\n{num_connections} connected",
+    "tooltip-format-connected": "{controller_alias}\t{controller_address}\n\n{num_connections} connected\n\n{device_enumerate}",
+    "tooltip-format-enumerate-connected": "{device_alias}\t{device_address}",
+    "tooltip-format-enumerate-connected-battery": "{device_alias}\t{device_address}\t{device_battery_percentage}%",
+    "on-click": "bluetoothctl show | awk '/Powered:/ {print $2}' | grep -q '^yes$' && bluetoothctl power off || bluetoothctl power on",
+    "on-click-right": "blueman-manager"
+  },
+  "pulseaudio": {
+    "format": "<span color='#00FF7F'>{icon}</span>{volume}%",
+    "format-muted": "<span color='#FF4040'> 󰖁 </span>0%",
+    "format-icons": {
+      "headphone": "<span color='#BF00FF'>  </span>",
+      "hands-free": "<span color='#BF00FF'>  </span>",
+      "headset": "<span color='#BF00FF'>  </span>",
+      "phone": "<span color='#00FFFF'>  </span>",
+      "portable": "<span color='#00FFFF'>  </span>",
+      "car": "<span color='#FFA500'>  </span>",
+      "default": [
+        "<span color='#808080'>  </span>",
+        "<span color='#FFFF66'>  </span>",
+        "<span color='#00FF7F'>  </span>"
+      ]
+    },
+    "on-click-right": "pavucontrol -t 3",
+    "on-click": "pactl -- set-sink-mute 0 toggle",
+    "tooltip": true,
+    "tooltip-format": "当前系统声音: {volume}%"
+  },
+  "backlight": {
+    "device": "intel_backlight",
+    "format": "<span color='#FFD700'>{icon}</span>{percent}%",
+    "tooltip": true,
+    "tooltip-format": "当前屏幕亮度: {percent}%",
+    "format-icons": [
+      "<span color='#696969'> 󰃞 </span>", // 暗 - 深灰
+      "<span color='#A9A9A9'> 󰃝 </span>", // 中 - 灰
+      "<span color='#FFFF66'> 󰃟 </span>", // 亮 - 柠檬黄
+      "<span color='#FFD700'> 󰃠 </span>" // 最亮 - 金色
+    ]
+  },
+  "custom/temperature": {
+    "exec": "sensors | awk '/^Package id 0:/ {print int($4)}'",
+    "format": "<span color='#FFA500'> </span>{}°C",
+    "interval": 5,
+    "tooltip": true,
+    "tooltip-format": "当前 CPU 温度: {}°C"
+  },
+  "custom/zramswap": {
+    "exec": "set -- $(free -h | awk '/Swap:/ {print $3, $2}'); echo -n ${1}/${2} | sed 's/i//g'",
+    "format": "<span color='#8A2BE2'> 💼</span> {}",
+    "interval": 1,
+    "tooltip": true,
+    "tooltip-format": "当前ZRAM占比: {}"
+  },
+  "memory": {
+    "format": "<span color='#8A2BE2'>  </span>{used:0.1f}G/{total:0.1f}G",
+    "tooltip": true,
+    "tooltip-format": "当前内存占比: {used:0.2f}G/{total:0.2f}G"
+  },
+  "cpu": {
+    "format": "<span color='#FF9F0A'>  </span>{usage}% ",
+    "tooltip": true
+  },
+  "custom/notification": {
+    "tooltip": false,
+    "format": "{0}{icon} ",
+    "format-icons": {
+      "notification": "<span foreground='red'><sup></sup></span>",
+      "none": "",
+      "dnd-notification": "<span foreground='red'><sup></sup></span>",
+      "dnd-none": "",
+      "inhibited-notification": "<span foreground='red'><sup></sup></span>",
+      "inhibited-none": "",
+      "dnd-inhibited-notification": "<span foreground='red'><sup></sup></span>",
+      "dnd-inhibited-none": ""
+    },
+    "return-type": "json",
+    "exec-if": "which swaync-client",
+    "exec": "swaync-client -swb",
+    "on-click": "swaync-client -t -sw",
+    "on-click-right": "swaync-client -d -sw",
+    "escape": true
+  },
+  "custom/weather": {
+    "exec": "$HOME/.config/waybar/weather.sh",
+    "format": "{} ",
+    "interval": 3600
+  },
+  "clock": {
+    "interval": 1,
+    "timezone": "Asia/Hong_Kong",
+    "format": "<span color='#BF00FF'>  </span>{:%H:%M} ",
+    "tooltip": true,
+    "tooltip-format": "{:L%Y 年 %m 月 %d 日, %A}"
+  },
+  "tray": {
+    "icon-size": 17,
+    "spacing": 6
+  }
+}
