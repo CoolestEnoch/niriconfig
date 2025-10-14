@@ -1,7 +1,7 @@
 # Prerequirements
 After you installed `sddm` and necessary applications from KDE Plasma like `dolphin plasma-systemmonitor systemsettings konsole okular`, then install packages below:
 ``` shell
-sudo pacman -S --needed niri alacritty fuzzel swaylock swayidle waybar swaybg xwayland-satellite
+sudo pacman -S --needed niri alacritty fuzzel swaylock swayidle waybar swaybg xwayland-satellite brightnessctl 
 ```
 
 # How to apply?
@@ -14,6 +14,13 @@ Then log out your session, choose `niri` instead of `KDE Plasma(Wayland)` in the
 # Default wallpaper
 Default desktop wallpaper is located at `~/Pictures/wallpaper/wallpaper_desktop.png` (or edit the configuration file `dotfiles/systemd/user/swaybg.service`), default lock-screen wallpaper is located at `~/Pictures/wallpaper/wallpaper_lock.png` (or edit the configuration file `dotconfig/swaylock/config`).
 
+
+# Clipboard History
+I'm using `vicinae` to toggle history, and the shortcut key is `Super+X`.
+Requirement:
+``` shell
+paru -S vicinae-bin
+```
 
 
 # Thanks
