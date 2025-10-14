@@ -6,19 +6,26 @@ if [[ " $@ " =~ " --clean " ]]; then
     do
         rm -rv "$HOME/.config/${f}"
     done
+else
+    echo "Run with --clean param to start a clean deployment."
+    echo ""
 fi
 
 cp -ruv * $HOME/.config
 
 PRODUCT_NAME=$(cat /sys/class/dmi/id/product_name 2>/dev/null)
 if [[ "$PRODUCT_NAME" == *"Surface"* ]]; then
-    echo "This is Surface: $PRODUCT_NAME"
-    CONFIG_FILE="$HOME/.config/niri/config.kdl"
+    echo "This is a Surface device: $PRODUCT_NAME, now running Surface patch..."
+    CONFIG_FILE_NIRI="$HOME/.config/niri/config.kdl"
+    CONFIG_FILE_WAYBAR="$HOME/.config/waybar/config.jsonc"
     
-    echo "Patching ~/.config/niri/config.kdl..."
-    sed -i 's/mode "1920x1080@60"/mode "1920x1280@60"/' "$CONFIG_FILE"
-    sed -i 's/scale 1.125/scale 1.25/' "$CONFIG_FILE"
-    sed -i 's/position x=1080 y=0/position x=1280 y=0/' "$CONFIG_FILE"
+    echo "Patching ~/.config/niri/config.kdl ..."
+    sed -i 's/mode "1920x1080@60"/mode "1920x1280@60"/' "$CONFIG_FILE_NIRI"
+    sed -i 's/scale 1.125/scale 1.25/' "$CONFIG_FILE_NIRI"
+    sed -i 's/position x=1080 y=0/position x=1280 y=0/' "$CONFIG_FILE_NIRI"
+    echo "Patching ~/.config/waybar/config.jsonc ..."
+    sed -i '/"wlr\/taskbar"$/{/[{]/!d}' "$CONFIG_FILE_WAYBAR"
+    sed -i 's/"tray"\,/"tray"/' "$CONFIG_FILE_WAYBAR"
     echo "Patching done."
 fi
 

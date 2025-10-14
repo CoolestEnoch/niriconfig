@@ -9,7 +9,8 @@
     "custom/suspend",
     "custom/reboot",
     "custom/power",
-    "tray"
+    "tray",
+    "wlr/taskbar"
   ],
   "modules-center": [
     "hyprland/window"
