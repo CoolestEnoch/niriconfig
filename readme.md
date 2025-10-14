@@ -23,6 +23,28 @@ paru -S vicinae-bin
 ```
 
 
+# Issues with WeChat (no popout window for right-click)
+Wrap the WeChat start command with `gamescope`, refer to [this](https://wiki.archlinux.org/title/Gamescope).
+You need to have `mesa` driver insatlled, refer to [this](https://wiki.archlinux.org/title/Intel_graphics).
+In general, just run this to install packages.
+``` shell
+sudo pacman -S gamescope mesa vulkan-intel
+```
+
+Then run `your_program` in `gamescope` with this command:
+``` shell
+# Direct run
+gamescope -- your_progrom
+# Run with specific resolution
+gamescope -W 1920 -H 1080 -r 60 -- your_program
+```
+If you occur into problems with `wayland`, add this param:
+``` shell
+--expose-wayland
+```
+
+
+
 # Thanks
 [Niri GitHub 仓库](https://github.com/YaLTeR/niri)
 ****

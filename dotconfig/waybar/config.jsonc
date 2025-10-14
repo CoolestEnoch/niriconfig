@@ -195,6 +195,7 @@
   },
   "cpu": {
     "format": "<span color='#FF9F0A'>  </span>{usage}% ",
+    "interval": 2,
     "tooltip": true
   },
   "custom/notification": {
