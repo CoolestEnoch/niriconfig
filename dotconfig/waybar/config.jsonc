@@ -9,8 +9,7 @@
     "custom/suspend",
     "custom/reboot",
     "custom/power",
-    "tray",
-    "wlr/taskbar"
+    "tray"
   ],
   "modules-center": [
     "hyprland/window"
@@ -219,8 +218,11 @@
   },
   "custom/weather": {
     "exec": "$HOME/.config/waybar/weather.sh",
+    "on-click": "$HOME/.config/waybar/weather.sh --webui",
     "format": "{} ",
-    "interval": 3600
+    "interval": 3600,
+    "tooltip": true,
+    "tooltip-format": "{} \n单击查询详细天气"
   },
   "clock": {
     "interval": 1,

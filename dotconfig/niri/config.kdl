@@ -86,15 +86,9 @@ output "eDP-1" {
     // If the mode is omitted altogether or is invalid, niri will pick one automatically.
     // Run `niri msg outputs` while inside a niri instance to list all outputs and their modes.
     
-    // Surface
-    //mode "1920x1280@60"
-    // Dell G5
-    mode "1920x1280@60"
+    mode "1920x1080@60"
 
     // You can use integer or fractional scale, for example use 1.5 for 150% scale.
-    // Surface
-    //scale 1.25
-    // Dell
     scale 1.125
 
     // Transform allows to rotate the output counter-clockwise, valid values are:
@@ -111,16 +105,23 @@ output "eDP-1" {
     // If the position is unset or results in an overlap, the output is instead placed
     // automatically.
 
-    // Surface
-    //position x=1280 y=0
-    // Dell G5
     position x=1080 y=0
+}
+
+// 壁纸显示在工作区后面
+layer-rule {
+    // This is for swaybg; change for other wallpaper tools.
+    // Find the right namespace by running niri msg layers.
+    match namespace="^wallpaper$"
+    place-within-backdrop true
 }
 
 // Settings that influence how windows are positioned and sized.
 // Find more information on the wiki:
 // https://yalter.github.io/niri/Configuration:-Layout
 layout {
+    // 工作区遮罩改为半透明
+    background-color "transparent"
     // Set gaps around windows in logical pixels.
     gaps 16
 
@@ -285,6 +286,10 @@ spawn-at-startup "waybar"
 // spawn-sh-at-startup "qs -c ~/source/qs/MyAwesomeShell"
 // 开机启动KDE polkit防止dolphin挂载磁盘的弹窗弹不出来
 spawn-sh-at-startup "/usr/lib/polkit-kde-authentication-agent-1 &"
+
+// 开机启动XDG_MENU_PREFIX防止dolphin打开文件不知道用什么软件
+spawn-sh-at-startup "XDG_MENU_PREFIX=arch- kbuildsycoca6 &"
+
 
 hotkey-overlay {
     // Uncomment this line to disable the "Important Hotkeys" pop-up at startup.
@@ -630,4 +635,7 @@ binds {
     // Powers off the monitors. To turn them back on, do any input like
     // moving the mouse or pressing any other key.
     Mod+Shift+P { power-off-monitors; }
+
+    // vicinae剪贴板历史记录
+    Super+X { spawn-sh "vicinae toggle"; }
 }
