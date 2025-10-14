@@ -23,7 +23,11 @@ paru -S vicinae-bin
 ```
 
 
+<<<<<<< HEAD
 # Issues about WeChat (no popout window for right-click)
+=======
+# Issues with WeChat (no popout window for right-click)
+>>>>>>> c527ad6
 Wrap the WeChat start command with `gamescope`, refer to [this](https://wiki.archlinux.org/title/Gamescope).
 You need to have `mesa` driver insatlled, refer to [this](https://wiki.archlinux.org/title/Intel_graphics).
 In general, just run this to install packages.

@@ -320,6 +320,24 @@ animations {
 
     // Slow down all animations by this factor. Values below 1 speed them up instead.
     // slowdown 3.0
+
+    workspace-switch {
+        spring damping-ratio=0.75 stiffness=1000 epsilon=0.0001
+    }
+    horizontal-view-movement {
+        spring damping-ratio=0.75 stiffness=800 epsilon=0.0001
+    }
+
+    window-movement {
+        spring damping-ratio=0.75 stiffness=800 epsilon=0.0001
+    }
+
+    window-resize {
+        spring damping-ratio=0.75 stiffness=800 epsilon=0.0001
+    }
+    overview-open-close {
+        spring damping-ratio=0.75 stiffness=800 epsilon=0.0001
+    }
 }
 
 // Window rules let you adjust behavior for individual windows.
