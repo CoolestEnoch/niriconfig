@@ -33,12 +33,14 @@ fi
 systemctl --user daemon-reload
 systemctl --user add-wants niri.service swaybg.service
 systemctl --user add-wants niri.service swaync_auto.service
-systemctl --user add-wants niri.service --now vicinae.service
+systemctl --user add-wants niri.service vicinae.service
 
 
 pkill waybar
 systemctl --user restart --now waybar.service
 
 pkill swaync
-systemctl --user restart --now swaync.service
-swaync-client --reload-config
+systemctl --user restart --now swaync_auto.service
+
+systemctl --user restart --now swaybg.service
+systemctl --user restart --now vicinae.service

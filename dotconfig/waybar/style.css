@@ -16,6 +16,7 @@
 /* 所有模块统一风格 */
 #workspaces,
 #window,
+#mpris,
 #tray{
   /*background-color: rgba(29,31,46, 0.95);*/
   background-color: rgba(15,27,53,0.9);
@@ -65,9 +66,9 @@
 #bluetooth,
 #battery,
 #pulseaudio,
+#mpris,
 #backlight,
 #custom-temperature,
-#custom-zramswap,
 #memory,
 #cpu,
 #custom-notification,
@@ -96,11 +97,11 @@
 #power-profiles-daemon:hover,
 #pulseaudio:hover,
 #custom-temperature:hover,
-#custom-zramswap:hover,
 #memory:hover,
 #cpu:hover,
 #custom-notification:hover,
 #clock:hover,
+#mpris:hover,
 #custom-lock:hover,
 #custom-reboot:hover,
 #custom-power:hover,

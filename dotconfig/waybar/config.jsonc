@@ -4,16 +4,14 @@
   "height": 32,
   "spacing": 0,
   "modules-left": [
-    "hyprland/workspaces",
     "custom/lock",
     "custom/suspend",
     "custom/reboot",
     "custom/power",
-    "tray",
-    "wlr/taskbar"
+    "tray"
   ],
   "modules-center": [
-    "hyprland/window"
+    "mpris"
   ],
   "modules-right": [
     "network",
@@ -23,43 +21,26 @@
     "pulseaudio",
     "backlight",
     "custom/temperature",
-    "custom/zramswap",
     "memory",
     "cpu",
     "custom/notification",
     "custom/weather",
     "clock"
   ],
-  "hyprland/workspaces": {
-    "disable-scroll": false,
-    "all-outputs": true,
-    "format": "{icon}",
-    "on-click": "activate",
-    "persistent-workspaces": {
-      "*": [
-        1,
-        2,
-        3,
-        4,
-        5,
-        6,
-        7,
-        8,
-        9
-      ]
+  "mpris": {
+    "format": "<span color='#28CD41'><i> {player_icon} {artist} - {title} </i></span>",
+    "format-paused": " {status_icon} {artist} - {title} ",
+    "tooltip-format": "{player}\n{player_icon} {dynamic}",
+    "artist-len": 7,
+    "title-len": 7,
+    "player-icons": {
+      "default": "▶",
+      "mpv": "🎵"
     },
-    "format-icons": {
-      "1": "󰣇",
-      "2": "󰈹",
-      "3": "󰇮",
-      "4": "",
-      "5": "",
-      "6": "",
-      "7": "",
-      "8": "",
-      "9": "󰖳",
-      "default": ""
-    }
+    "status-icons": {
+      "paused": "⏸"
+    },
+    // "ignored-players": ["firefox"]
   },
   "wlr/taskbar": {
     "format": "{icon}",
@@ -181,17 +162,10 @@
     "tooltip": true,
     "tooltip-format": "当前 CPU 温度: {}°C"
   },
-  "custom/zramswap": {
-    "exec": "set -- $(free -h | awk '/Swap:/ {print $3, $2}'); echo -n ${1}/${2} | sed 's/i//g'",
-    "format": "<span color='#8A2BE2'> 💼</span> {}",
-    "interval": 1,
-    "tooltip": true,
-    "tooltip-format": "当前ZRAM占比: {}"
-  },
   "memory": {
-    "format": "<span color='#8A2BE2'>  </span>{used:0.1f}G/{total:0.1f}G",
+    "format": "<span color='#8A2BE2'> 💼</span> {swapUsed:0.1f}/{swapTotal:0.1f}G <span color='#8A2BE2'>  </span>{used:0.1f}G/{total:0.1f}G",
     "tooltip": true,
-    "tooltip-format": "当前内存占比: {used:0.2f}G/{total:0.2f}G"
+    "tooltip-format": "RAM: {used:0.2f}G/{total:0.2f}G\nZRAM:{swapUsed:0.1f}/{swapTotal:0.1f}G"
   },
   "cpu": {
     "format": "<span color='#FF9F0A'>  </span>{usage}% ",
