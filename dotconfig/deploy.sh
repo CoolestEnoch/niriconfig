@@ -26,6 +26,7 @@ if [[ "$PRODUCT_NAME" == *"Surface"* ]]; then
     echo "Patching ~/.config/waybar/config.jsonc ..."
     sed -i '/"wlr\/taskbar"$/{/[{]/!d}' "$CONFIG_FILE_WAYBAR"
     sed -i 's/"tray"\,/"tray"/' "$CONFIG_FILE_WAYBAR"
+    sed -i 's/"artist-len": 7\,/"artist-len": 5\,/' "$CONFIG_FILE_WAYBAR"
     echo "Patching done."
 fi
 

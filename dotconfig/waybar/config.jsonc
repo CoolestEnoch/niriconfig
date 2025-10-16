@@ -28,7 +28,7 @@
     "clock"
   ],
   "mpris": {
-    "format": "<span color='#28CD41'><i> {player_icon} {artist} - {title} </i></span>",
+    "format": "<span color='#28CD41'><i> {player_icon}{artist} - {title} </i></span>",
     "format-paused": " {status_icon} {artist} - {title} ",
     "tooltip-format": "{player}\n{player_icon} {dynamic}",
     "artist-len": 7,
@@ -75,8 +75,8 @@
     "tooltip-format": "关机"
   },
   "network": {
-    "format-wifi": " <span color='#00FFFF'> 󰤨 </span>{essid}",
-    "format-ethernet": " <span color='#7FFF00'> </span>Wired",
+    "format-wifi": "<span color='#00FFFF'> 󰤨 </span>{essid}",
+    "format-ethernet": "<span color='#7FFF00'> </span>Wired",
     "tooltip-format": "<span color='#FF1493'> 󰅧 </span>{bandwidthUpBytes}  <span color='#00BFFF'> 󰅢 </span>{bandwidthDownBytes}",
     "format-linked": "<span color='#FFA500'> 󱘖 </span>{ifname} (No IP) ",
     "format-disconnected": "<span color='#FF4040'>  </span>Disconnected ",
@@ -88,8 +88,8 @@
       "warning": 30,
       "critical": 15
     },
-    "format": "<span color='#28CD41'> {icon} </span>{capacity}% ",
-    "format-charging": " 󱐋{capacity}%",
+    "format": "<span color='#28CD41'> {icon}</span>{capacity}%",
+    "format-charging": "󱐋{capacity}%",
     "interval": 5,
     "format-icons": [
       "󰂎",
@@ -101,7 +101,7 @@
     "tooltip": true
   },
   "power-profiles-daemon": {
-    "format": "{icon}",
+    "format": " {icon}",
     "tooltip-format": "Power profile: {profile}\nDriver: {driver}",
     "tooltip": true,
     "format-icons": {
@@ -163,18 +163,18 @@
     "tooltip-format": "当前 CPU 温度: {}°C"
   },
   "memory": {
-    "format": "<span color='#8A2BE2'> 💼</span> {swapUsed:0.1f}/{swapTotal:0.1f}G <span color='#8A2BE2'>  </span>{used:0.1f}G/{total:0.1f}G",
+    "format": "<span color='#8A2BE2'> 💼</span>{swapUsed:0.1f}/{swapTotal:0.1f}G<span color='#8A2BE2'>  </span>{used:0.1f}G/{total:0.1f}G",
     "tooltip": true,
     "tooltip-format": "RAM: {used:0.2f}G/{total:0.2f}G\nZRAM:{swapUsed:0.1f}/{swapTotal:0.1f}G"
   },
   "cpu": {
-    "format": "<span color='#FF9F0A'>  </span>{usage}% ",
+    "format": "<span color='#FF9F0A'>  </span>{usage}%",
     "interval": 2,
     "tooltip": true
   },
   "custom/notification": {
     "tooltip": false,
-    "format": "{0}{icon} ",
+    "format": "{icon} {0}",
     "format-icons": {
       "notification": "<span foreground='red'><sup></sup></span>",
       "none": "",
@@ -203,7 +203,7 @@
   "clock": {
     "interval": 1,
     "timezone": "Asia/Hong_Kong",
-    "format": "<span color='#BF00FF'>  </span>{:%H:%M} ",
+    "format": "<span color='#BF00FF'> </span>{:%H:%M} ",
     "tooltip": true,
     "tooltip-format": "{:L%Y 年 %m 月 %d 日, %A}"
   },
