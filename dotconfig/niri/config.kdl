@@ -292,6 +292,11 @@ cursor {
     xcursor-size 24
 }
 
+// Make workspaces four times smaller than normal in the overview.
+overview {
+    zoom 0.25
+}
+
 // This line starts waybar, a commonly used bar for Wayland compositors.
 spawn-at-startup "waybar"
 
