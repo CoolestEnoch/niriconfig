@@ -58,7 +58,7 @@
   },
   "custom/suspend": {
     "format": "<span color='#FFD700'>💤</span>",
-    "on-click": "swaylock & systemctl suspend",
+    "on-click": "swaylock & sleep 1 && systemctl suspend",
     "tooltip": true,
     "tooltip-format": "休眠"
   },
