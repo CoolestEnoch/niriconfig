@@ -11,6 +11,24 @@ else
     echo ""
 fi
 
+
+# =============  CHANGE YOUR CURSOR THEME NAME HERE  =============
+THEME_CURSOR="Banana"
+THEME_CURSOR_SIZE="24"
+echo "Patching ~/.zshrc for cursor theme and size"
+sed -i "s/^gtk-cursor-theme-name.*/gtk-cursor-theme-name=\"$THEME_CURSOR\"/" $HOME/.gtkrc-2.0
+sed -i "s/^Gtk\/CursorThemeName.*/Gtk\/CursorThemeName \"$THEME_CURSOR\"/" $HOME/.config/xsettingsd/xsettingsd.conf
+sed -i "s/^gtk-cursor-theme-name.*/gtk-cursor-theme-name=$THEME_CURSOR/" $HOME/.config/gtk-4.0/settings.ini
+sed -i "s/^gtk-cursor-theme-name.*/gtk-cursor-theme-name=$THEME_CURSOR/" $HOME/.config/gtk-3.0/settings.ini
+sed -i "s/^    XCURSOR_THEME.*/    XCURSOR_THEME \"$THEME_CURSOR\"/" niri/config.kdl
+sed -i "s/^    XCURSOR_SIZE.*/    XCURSOR_SIZE \"$THEME_CURSOR_SIZE\"/" niri/config.kdl
+sed -i "s/^    xcursor-theme.*/    xcursor-theme \"$THEME_CURSOR\"/" niri/config.kdl
+sed -i "s/^    xcursor-size.*/    xcursor-size $THEME_CURSOR_SIZE/" niri/config.kdl
+sed -i "s/^export XCURSOR_THEME=.*/export XCURSOR_THEME=\"$THEME_CURSOR\"/" $HOME/.zshrc
+sed -i "s/^export XCURSOR_SIZE=.*/export XCURSOR_SIZE=\"$THEME_CURSOR_SIZE\"/" $HOME/.zshrc
+
+
+echo "Copying files..."
 cp -ruv * $HOME/.config
 
 PRODUCT_NAME=$(cat /sys/class/dmi/id/product_name 2>/dev/null)
@@ -27,10 +45,10 @@ if [[ "$PRODUCT_NAME" == *"Surface"* ]]; then
     sed -i '/"wlr\/taskbar"$/{/[{]/!d}' "$CONFIG_FILE_WAYBAR"
     sed -i 's/"tray"\,/"tray"/' "$CONFIG_FILE_WAYBAR"
     sed -i 's/"artist-len": 7\,/"artist-len": 5\,/' "$CONFIG_FILE_WAYBAR"
-    echo "Patching done."
 fi
 
 
+echo "Reloading services..."
 systemctl --user daemon-reload
 systemctl --user add-wants niri.service swaybg.service
 systemctl --user add-wants niri.service swaync_auto.service
@@ -45,3 +63,8 @@ systemctl --user restart --now swaync_auto.service
 
 systemctl --user restart --now swaybg.service
 systemctl --user restart --now vicinae.service
+
+
+
+echo "!!! Remember to run source ~/.zshrc then! !!!"
+echo "Enjoy!"

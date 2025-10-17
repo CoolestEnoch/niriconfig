@@ -119,7 +119,7 @@
     "tooltip-format-connected": "{controller_alias}\t{controller_address}\n\n{num_connections} connected\n\n{device_enumerate}",
     "tooltip-format-enumerate-connected": "{device_alias}\t{device_address}",
     "tooltip-format-enumerate-connected-battery": "{device_alias}\t{device_address}\t{device_battery_percentage}%",
-    "on-click": "bluetoothctl show | awk '/Powered:/ {print $2}' | grep -q '^yes$' && sh -c 'bluetoothctl power off & pkill --signal=QUIT bluedevil-wizar' || sh -c 'bluetoothctl power on & bluedevil-wizard'",
+    "on-click": "bluetoothctl show | awk '/Powered:/ {print $2}' | grep -q '^yes$' && sh -c 'bluetoothctl power off & pkill --signal=TERM bluedevil-wizar' || sh -c 'bluetoothctl power on & bluedevil-wizard'",
     "on-click-right": "blueman-manager"
   },
   "pulseaudio": {
@@ -138,7 +138,7 @@
         "<span color='#00FF7F'>  </span>"
       ]
     },
-    "on-click-right": "pgrep pavucontrol && pkill --signal=QUIT pavucontrol || pavucontrol -t 3",
+    "on-click-right": "pgrep pavucontrol && pkill --signal=TERM pavucontrol || pavucontrol -t 3",
     "on-click": "pactl -- set-sink-mute 0 toggle",
     "tooltip": true,
     "tooltip-format": "当前系统声音: {volume}%"
@@ -170,6 +170,7 @@
   "cpu": {
     "format": "<span color='#FF9F0A'>  </span>{usage}%",
     "interval": 2,
+    "on-click": "XDG_CURRENT_DESKTOP=gnome plasma-systemmonitor",
     "tooltip": true
   },
   "custom/notification": {

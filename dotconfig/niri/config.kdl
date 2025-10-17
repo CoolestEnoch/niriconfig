@@ -282,6 +282,14 @@ layout {
 // 全局环境变量
 environment {
     XDG_CURRENT_DESKTOP "gnome" //修复某些程序打开后是浅色主题
+    XCURSOR_PATH "~/.icons"
+    XCURSOR_THEME "Banana"
+    XCURSOR_SIZE "24"
+}
+
+cursor {
+    xcursor-theme "Banana"
+    xcursor-size 24
 }
 
 // This line starts waybar, a commonly used bar for Wayland compositors.
@@ -425,8 +433,8 @@ binds {
     // Example volume keys mappings for PipeWire & WirePlumber.
     // The allow-when-locked=true property makes them work even when the session is locked.
     // Using spawn-sh allows to pass multiple arguments together with the command.
-    XF86AudioRaiseVolume allow-when-locked=true { spawn-sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.1+"; }
-    XF86AudioLowerVolume allow-when-locked=true { spawn-sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.1-"; }
+    XF86AudioRaiseVolume allow-when-locked=true { spawn-sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.05+"; }
+    XF86AudioLowerVolume allow-when-locked=true { spawn-sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.05-"; }
     XF86AudioMute        allow-when-locked=true { spawn-sh "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"; }
     XF86AudioMicMute     allow-when-locked=true { spawn-sh "wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"; }
 

@@ -11,6 +11,10 @@ cd dotconfig && chmod +x deploy.sh && ./deploy.sh
 Then log out your session, choose `niri` instead of `KDE Plasma(Wayland)` in the left-bottom corner, enter your password and login.
 
 
+# How to change fonts?
+Download font from KDE Theme Store or other site, uncompress it to `~/.icons`. Then remember the cursor theme's name, open the `deploy.sh` and change the `THEME_CURSOR` to theme's name, and `THEME_CURSOR_SIZE` to cursor's size \(default is 24\) value to what you want, then rerun `deploy.sh` again to live patch cursor theme settings.
+
+
 # Default wallpaper
 Default desktop wallpaper is located at `~/Pictures/wallpaper/wallpaper_desktop.png` (or edit the configuration file `dotfiles/systemd/user/swaybg.service`), default lock-screen wallpaper is located at `~/Pictures/wallpaper/wallpaper_lock.png` (or edit the configuration file `dotconfig/swaylock/config`).
 

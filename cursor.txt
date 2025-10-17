@@ -1,0 +1,8 @@
+Documents/niriconfig/dotconfig/niri/config.kdl
+.gtkrc-2.0
+.config/xsettingsd/xsettingsd.conf
+.config/niri/config.kdl
+.config/gtk-4.0/settings.ini
+.config/kcminputrc
+.config/gtk-3.0/settings.ini
+
