@@ -31,8 +31,8 @@
     "format": "<span color='#28CD41'><i> {player_icon}{artist} - {title} </i></span>",
     "format-paused": " {status_icon} {artist} - {title} ",
     "tooltip-format": "{player}\n{player_icon} {dynamic}",
-    "artist-len": 7,
-    "title-len": 7,
+    "artist-len": 20,
+    "title-len": 20,
     "player-icons": {
       "default": "▶",
       "mpv": "🎵"

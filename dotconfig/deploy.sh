@@ -45,6 +45,8 @@ if [[ "$PRODUCT_NAME" == *"Surface"* ]]; then
     sed -i '/"wlr\/taskbar"$/{/[{]/!d}' "$CONFIG_FILE_WAYBAR"
     sed -i 's/"tray"\,/"tray"/' "$CONFIG_FILE_WAYBAR"
     sed -i 's/"artist-len": 7\,/"artist-len": 5\,/' "$CONFIG_FILE_WAYBAR"
+    sed -i "s/^    \"artist-len\": .*/    \"artist-len\": 5,/" "$CONFIG_FILE_WAYBAR"
+    sed -i "s/^    \"title-len\": .*/    \"title-len\": 5,/" "$CONFIG_FILE_WAYBAR"
 fi
 
 
