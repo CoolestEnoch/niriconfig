@@ -43,7 +43,7 @@ handle_config_weather() {
 deploy_noctalia() {
     handle_config_weather
     log "Copying files..."
-    exclude_dirs=("waybar")
+    exclude_dirs=("systemd" "waybar")
     for dir in dotconfig/*/; do
         dir_name="${dir%/}"
 
@@ -65,16 +65,16 @@ deploy_noctalia() {
     log "Reloading services..."
     systemctl --user daemon-reload
     systemctl --user add-wants niri.service noctalia.service
-    # systemctl --user restart --now noctalia.service
 
-    qs -c noctalia-shell > /dev/null 2>&1 &
+    niri msg action spawn-sh -- "qs -c noctalia-shell > /dev/null 2>&1"
     sed -i "s/\"name\": \"LOCATION\"/\"name\": \"$CONFIG_LOCATION\"/gq" "$HOME/.config/noctalia/settings.json"
     sed -i "s/USERNAME/$(whoami)/g" "$HOME/.config/noctalia/settings.json"
+    sed -i "s/^spawn-at-startup \"waybar\".*/\/\/spawn-at-startup \"waybar\"/" $HOME/.config/niri/config.kdl
 }
 
 deploy_waybar() {
     log "Copying files..."
-    exclude_dirs=("noctalia")
+    exclude_dirs=("systemd" "noctalia")
     for dir in dotconfig/*/; do
         dir_name="${dir%/}"
 
@@ -102,8 +102,7 @@ deploy_waybar() {
 
 
     pkill waybar
-    systemctl --user enable --now waybar.service
-    systemctl --user restart --now waybar.service
+    niri msg action spawn-sh -- "waybar"
 
     pkill swaync
     systemctl --user restart --now swaync_auto.service
@@ -124,7 +123,7 @@ done
 
 if [[ " $@ " =~ " --clean " ]]; then
     log "Running clean deployment..."
-    for f in $(ls -d */ | sed 's#/##')
+    for f in $(ls -d dotconfig/*/ | sed 's#dotconfig/##')
     do
         rm -rv "$HOME/.config/${f}"
     done

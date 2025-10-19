@@ -3,12 +3,27 @@ After you installed `sddm` and necessary applications from KDE Plasma like `dolp
 ``` shell
 sudo pacman -S --needed niri alacritty fuzzel swaylock swayidle waybar swaybg xwayland-satellite brightnessctl 
 ```
+If you want to use `waybar`, please install `network-manager-applet` and `blueman` to control these two hardware.
 
 # How to apply?
 ``` shell
 cd dotconfig && chmod +x deploy.sh && ./deploy.sh
 ```
 Then log out your session, choose `niri` instead of `KDE Plasma(Wayland)` in the left-bottom corner, enter your password and login.
+
+
+If you want to run a clean-deployment, please add `--clean` param to the scipt.
+e.g.
+``` shell
+./deploy.sh --clean
+```
+
+
+If you have `noctalia` installed on your computer, it will use it instead of `waybar`. If you want to force use `waybar` instead of `noctalia`, please add `--waybar` param to the script.
+e.g.
+``` shell
+./deploy.sh --waybar
+```
 
 
 # How to change fonts?
