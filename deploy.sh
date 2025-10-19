@@ -6,11 +6,10 @@ THEME_CURSOR_SIZE="24"
 
 
 log() {
+    local GREEN='\033[0;32m'
+    local NC='\033[0m'
     if [ "$1" ]; then
-        if [ "$enable_cache" == "1" ]; then
-            echo -e "[$(date)] - $1" >> $log_file
-        fi
-        echo "[$(date)] - $1"
+        echo -e "${GREEN}[$(date)] - $*${NC}"
     fi
 }
 
@@ -98,7 +97,6 @@ deploy_waybar() {
     systemctl --user add-wants niri.service swaybg.service
     systemctl --user add-wants niri.service swaync_auto.service
     systemctl --user add-wants niri.service vicinae.service
-    systemctl --user add-wants niri.service noctalia.service
 
 
     pkill waybar
@@ -148,7 +146,7 @@ sed -i "s/^export XCURSOR_SIZE=.*/export XCURSOR_SIZE=\"$THEME_CURSOR_SIZE\"/" $
 
 if command -v qs > /dev/null 2>&1; then
     log "Detected noctalia, using noctalia config."
-    if command -v matugen > /dev/null 2>&1; then
+    if ! command -v matugen > /dev/null 2>&1; then
         log "WARNING: matugen not found! This is an optional dependency for dynamic color working with noctalia!"
     fi
     if [[ " $@ " =~ " --waybar " ]]; then
