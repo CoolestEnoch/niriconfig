@@ -64,6 +64,8 @@ deploy_noctalia() {
     sed -i "s/\"name\": \"LOCATION\"/\"name\": \"$LOCATION\"/g" "$HOME/.config/noctalia/settings.json"
     sed -i "s/USERNAME/$(whoami)/g" "$HOME/.config/noctalia/settings.json"
     sed -i "s/^spawn-at-startup \"waybar\".*/\/\/spawn-at-startup \"waybar\"/" $HOME/.config/niri/config.kdl
+    sed -i 's/^    Super+Alt+L.*/    Super+Alt+L hotkey-overlay-title="Lock the Screen: noctalia-shell" { spawn-sh "qs -c noctalia-shell ipc call lockScreen toggle"; }/' $HOME/.config/niri/config.kdl
+    sed -i 's/vicinae toggle/qs -c noctalia-shell ipc call launcher clipboard/g' $HOME/.config/niri/config.kdl
 }
 
 deploy_waybar() {
@@ -106,7 +108,7 @@ deploy_waybar() {
 
 
 log "Stopping services..."
-services=("noctalia" "swaybg" "swaync_auto" "vicinae" "waybar" "qs")
+services=("noctalia" "swaybg" "swaync_auto" "swaync" "vicinae" "waybar" "qs")
 for s in "${services[@]}"; do
   systemctl --user stop --now "$s"
   systemctl --user disable --now "$s"

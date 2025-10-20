@@ -91,12 +91,15 @@
                 },
                 {
                     "displayMode": "onhover",
+                    "id": "Brightness"
+                },
+                {
+                    "displayMode": "onhover",
                     "id": "Battery",
                     "warningThreshold": 30
                 },
                 {
-                    "displayMode": "onhover",
-                    "id": "Brightness"
+                    "id": "PowerProfile"
                 },
                 {
                     "customFont": "",
@@ -219,7 +222,7 @@
         "weatherEnabled": true
     },
     "network": {
-        "wifiEnabled": true
+        "wifiEnabled": false
     },
     "nightLight": {
         "autoSchedule": true,

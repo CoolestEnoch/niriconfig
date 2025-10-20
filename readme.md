@@ -26,11 +26,11 @@ e.g.
 ```
 To install `noctalia`, please run this:
 ``` shell
-paru -Sy noctalia-shell matugen-bin
+paru -Sy noctalia-shell matugen-bin cliphist
 ```
 > Note:
-> `matugen` is an optional dependency to extract color from your wallpaper, just like the Monet Color introduced in Android 12.
-> See also: [dynamic colors (Android Developers)](https://developer.android.google.cn/develop/ui/views/theming/dynamic-colors)
+> `matugen` is an optional dependency to extract color from your wallpaper, just like the Monet Color introduced in Android 12. See also: [dynamic colors (Android Developers)](https://developer.android.google.cn/develop/ui/views/theming/dynamic-colors)
+> `cliphist` is an optional dependency for noctalia to display clipboard history. If you have installed `vicinae` in section Clipboard History, it will be disabled by `deploy.sh`.
 
 
 # How to change fonts?
