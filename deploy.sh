@@ -14,10 +14,11 @@ log() {
 }
 
 
-CONFIG_LOCATION=""
-handle_config_weather() {
+
+deploy_noctalia() {
     local config_file="config.txt"
     local script_dir=$(dirname "$(readlink -f "$0")")
+    local LOCATION=""
     
     if [[ -f "$config_file" ]]; then
         echo "Found Config: $config_file"
@@ -34,13 +35,7 @@ handle_config_weather() {
         echo "Saved LOCATION=$LOCATION to $config_file"
     fi
     
-    CONFIG_LOCATION="$LOCATION"
-}
-
-
-
-deploy_noctalia() {
-    handle_config_weather
+    
     log "Copying files..."
     exclude_dirs=("systemd" "waybar")
     for dir in dotconfig/*/; do
@@ -66,7 +61,7 @@ deploy_noctalia() {
     systemctl --user add-wants niri.service noctalia.service
 
     niri msg action spawn-sh -- "qs -c noctalia-shell > /dev/null 2>&1"
-    sed -i "s/\"name\": \"LOCATION\"/\"name\": \"$CONFIG_LOCATION\"/gq" "$HOME/.config/noctalia/settings.json"
+    sed -i "s/\"name\": \"LOCATION\"/\"name\": \"$LOCATION\"/g" "$HOME/.config/noctalia/settings.json"
     sed -i "s/USERNAME/$(whoami)/g" "$HOME/.config/noctalia/settings.json"
     sed -i "s/^spawn-at-startup \"waybar\".*/\/\/spawn-at-startup \"waybar\"/" $HOME/.config/niri/config.kdl
 }

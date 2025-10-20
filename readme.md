@@ -24,6 +24,13 @@ e.g.
 ``` shell
 ./deploy.sh --waybar
 ```
+To install `noctalia`, please run this:
+``` shell
+paru -Sy noctalia-shell matugen-bin
+```
+> Note:
+> `matugen` is an optional dependency to extract color from your wallpaper, just like the Monet Color introduced in Android 12.
+> See also: [dynamic colors (Android Developers)](https://developer.android.google.cn/develop/ui/views/theming/dynamic-colors)
 
 
 # How to change fonts?
