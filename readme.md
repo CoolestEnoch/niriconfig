@@ -74,6 +74,7 @@ If you occur into problems with `wayland`, add this param:
 # Thanks
 [Niri GitHub 仓库](https://github.com/YaLTeR/niri)
 ****
+[XF86 Keyboard Symbols](https://wiki.linuxquestions.org/wiki/XF86_keyboard_symbols)
 [kznleaf - 无限平铺窗口管理器——niri在 ArchLinux 上的安装与配置](https://kznleaf.top/2025/09/18/niri%E5%AE%89%E8%A3%85%E4%B8%8E%E9%85%8D%E7%BD%AE)
 [woioeow/hyprland-dotfiles GitHub仓库](https://github.com/woioeow/hyprland-dotfiles)
 [Archlinux Forums - How to set up Polkit to allow Dolphin to mount different Partitions?](https://bbs.archlinux.org/viewtopic.php?id=288823)
