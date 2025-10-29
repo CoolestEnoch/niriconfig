@@ -37,23 +37,14 @@ deploy_noctalia() {
     
     
     log "Copying files..."
-    exclude_dirs=("systemd" "waybar")
-    for dir in dotconfig/*/; do
-        dir_name="${dir%/}"
-
-        exclude=0
-        for exclude_dir in "${exclude_dirs[@]}"; do
-            if [[ "$dir_name" == "$exclude_dir" ]]; then
-                exclude=1
-                break
-            fi
-        done
-
-        if [[ $exclude -eq 0 ]]; then
-            cp -ruv "$dir_name" $HOME/.config/
-        else
-            echo "Skipping exclude dir: $dir_name"
-        fi
+    include_dirs=("niri" "noctalia")
+    for dir in "${include_dirs[@]}"; do
+        cp -ruv dotconfig/$dir $HOME/.config/
+    done
+    include_systemd_services=("noctalia")
+    mkdir -p ${HOME}/.config/systemd/user
+    for serv in "${include_systemd_services[@]}"; do
+        cp -ruv "dotconfig/systemd/user/${serv}.service" "${HOME}/.config/systemd/user/${serv}.service"
     done
 
     log "Reloading services..."
@@ -70,23 +61,14 @@ deploy_noctalia() {
 
 deploy_waybar() {
     log "Copying files..."
-    exclude_dirs=("systemd" "noctalia")
-    for dir in dotconfig/*/; do
-        dir_name="${dir%/}"
-
-        exclude=0
-        for exclude_dir in "${exclude_dirs[@]}"; do
-            if [[ "$dir_name" == "$exclude_dir" ]]; then
-                exclude=1
-                break
-            fi
-        done
-
-        if [[ $exclude -eq 0 ]]; then
-            cp -ruv "$dir_name" $HOME/.config/
-        else
-            echo "Skipping exclude dir: $dir_name"
-        fi
+    include_dirs=("niri" "swaylock" "swaync" "waybar")
+    for dir in "${include_dirs[@]}"; do
+        cp -ruv dotconfig/$dir $HOME/.config/
+    done
+    include_systemd_services=("swaybg" "swayidle" "swaync_auto")
+    mkdir -p ${HOME}/.config/systemd/user
+    for serv in "${include_systemd_services[@]}"; do
+        cp -ruv "dotconfig/systemd/user/${serv}.service" "${HOME}/.config/systemd/user/${serv}.service"
     done
 
     log "Reloading services..."
@@ -110,9 +92,9 @@ deploy_waybar() {
 log "Stopping services..."
 services=("noctalia" "swaybg" "swaync_auto" "swaync" "vicinae" "waybar" "qs")
 for s in "${services[@]}"; do
+  killall $s
   systemctl --user stop --now "$s"
   systemctl --user disable --now "$s"
-  killall $s
 done
 
 
