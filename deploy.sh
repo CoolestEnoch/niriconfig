@@ -50,6 +50,7 @@ deploy_noctalia() {
     log "Reloading services..."
     systemctl --user daemon-reload
     systemctl --user add-wants niri.service noctalia.service
+    systemctl --user mask swaync.service
 
     niri msg action spawn-sh -- "qs -c noctalia-shell > /dev/null 2>&1"
     sed -i "s/\"name\": \"LOCATION\"/\"name\": \"$LOCATION\"/g" "$HOME/.config/noctalia/settings.json"
