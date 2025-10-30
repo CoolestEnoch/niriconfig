@@ -1,0 +1,10 @@
+[Unit]
+Description=Aria2c Download Manager
+
+[Service]
+Type=forking
+WorkingDirectory=/home/enoch/Documents/software/alist/storage/main/aria2
+ExecStart=/usr/bin/aria2c --conf-path=/home/enoch/Documents/software/aria2config/aria2.conf -D
+ExecStop=pkill --signal=TERM aria2c
+Restart=on-failure
+RestartSec=5s

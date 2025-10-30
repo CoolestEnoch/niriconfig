@@ -33,6 +33,18 @@ paru -Sy noctalia-shell matugen-bin cliphist
 > `cliphist` is an optional dependency for noctalia to display clipboard history. If you have installed `vicinae` in section Clipboard History, it will be disabled by `deploy.sh`.
 
 
+
+# Music Player Support
+Now support `mpc` and `mpris` protocol player, and all will be configured by `deploy.sh`.
+`mpris` are supported natively and you can use it out-of-box.
+
+
+To use `mpd`, install dependencies below:
+``` shell
+sudo pacman -S ncmpcpp mpd wildmidi timidity++ mpc
+```
+
+
 # How to change fonts?
 Download font from KDE Theme Store or other site, uncompress it to `~/.icons`. Then remember the cursor theme's name, open the `deploy.sh` and change the `THEME_CURSOR` to theme's name, and `THEME_CURSOR_SIZE` to cursor's size \(default is 24\) value to what you want, then rerun `deploy.sh` again to live patch cursor theme settings.
 

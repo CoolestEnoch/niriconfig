@@ -4,7 +4,7 @@ log() {
     local GREEN='\033[0;32m'
     local NC='\033[0m'
     if [ "$1" ]; then
-        echo -e "${GREEN}[$(date)] - $*${NC}"
+        echo -e "${GREEN}[$(date)] - $*${NC}" >&2
     fi
 }
 
@@ -60,6 +60,7 @@ get_config_value() {
 
 
 deploy_noctalia() {
+    log "[noctalia] Copying files..."
     local config_file="config.txt"
     local script_dir=$(dirname "$(readlink -f "$0")")
     local LOCATION_WEATHER=$(get_config_value "LOCATION_WEATHER" "Enter your LOCATION for weather: ")
@@ -90,7 +91,7 @@ deploy_noctalia() {
 }
 
 deploy_waybar() {
-    log "Copying files..."
+    log "[waybar] Copying files..."
     local include_dirs=("niri" "swaylock" "swaync" "waybar")
     for dir in "${include_dirs[@]}"; do
         cp -ruv dotconfig/$dir $HOME/.config/
@@ -120,7 +121,7 @@ deploy_waybar() {
 
 
 deploy_mpd() {
-    log "Copying files..."
+    log "[mpd] Copying files..."
     local include_dirs=("mpd")
     for dir in "${include_dirs[@]}"; do
         cp -ruv dotconfig/$dir $HOME/.config/
@@ -128,11 +129,21 @@ deploy_mpd() {
 
 
     local MUSIC_DIRECTORY=$(get_config_value "MUSIC_DIRECTORY" "Enter your MUSIC_DIRECTORY for mpd: ")
-    sed -i "s#MUSIC_DIRECTORY#${MUSIC_DIRECTORY}#g" "$HOME/.config/mpd/mpd.conf"
+    local parent=$(dirname "$MUSIC_DIRECTORY")
+    local targetfolder=$(basename "$MUSIC_DIRECTORY")
+    sed -i "s#MUSIC_DIRECTORY#${parent}#g" "$HOME/.config/mpd/mpd.conf"
+    mkdir -p $(cat "$HOME/.config/mpd/mpd.conf" | grep playlist_directory | awk '{print $2}' | sed 's/\"//g' | sed "s#~#${HOME}#g")
+    mpd
+    mpc clear
+    mpc add "${targetfolder}"
+    mpc update
+    mpc shuffle
+    mpc save "${targetfolder}"
+    mpc load "${targetfolder}"
 }
 
 deploy_ncmpcpp() {
-    log "Copying files..."
+    log "[ncmpcpp] Copying files..."
     include_dirs=("ncmpcpp")
     for dir in "${include_dirs[@]}"; do
         cp -ruv dotconfig/$dir $HOME/.config/
@@ -166,8 +177,11 @@ fi
 
 
 # Music player deployment
-deploy_mpd
-deploy_ncmpcpp
+if command -v mpd > /dev/null 2>&1; then
+    log "Found mpd! Now apply related settings..."
+    deploy_mpd
+    deploy_ncmpcpp
+fi
 
 
 THEME_CURSOR=$(get_config_value "THEME_CURSOR" "Enter your THEME_CURSOR (e.g. Banana): ")
@@ -222,8 +236,8 @@ if [[ "$PRODUCT_NAME" == *"Surface"* ]]; then
     sed -i '/"wlr\/taskbar"$/{/[{]/!d}' "$CONFIG_FILE_WAYBAR"
     sed -i 's/"tray"\,/"tray"/' "$CONFIG_FILE_WAYBAR"
     sed -i 's/"artist-len": 7\,/"artist-len": 5\,/' "$CONFIG_FILE_WAYBAR"
-    sed -i "s/^    \"artist-len\": .*/    \"artist-len\": 5,/" "$CONFIG_FILE_WAYBAR"
-    sed -i "s/^    \"title-len\": .*/    \"title-len\": 5,/" "$CONFIG_FILE_WAYBAR"
+    sed -i "s/^    \"artist-len\": .*/    \"artist-len\": 5,/g" "$CONFIG_FILE_WAYBAR"
+    sed -i "s/^    \"title-len\": .*/    \"title-len\": 5,/g" "$CONFIG_FILE_WAYBAR"
 fi
 
 
