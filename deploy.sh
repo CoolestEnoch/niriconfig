@@ -1,10 +1,5 @@
 #!/bin/bash
 
-# =============  CHANGE YOUR CURSOR THEME NAME HERE  =============
-THEME_CURSOR="Banana"
-THEME_CURSOR_SIZE="24"
-
-
 log() {
     local GREEN='\033[0;32m'
     local NC='\033[0m'
@@ -13,35 +8,69 @@ log() {
     fi
 }
 
+# Example: 
+# get_config_value "YOUR_KEY" "Tip for user to enter"
+get_config_value() {
+    local key="$1"
+    local tip="$2"
+    local config_file="./config.txt"
+    local value=""
+    local need_save=false
+    local output=""
+    
+    if [[ ! -f "$config_file" ]]; then
+        touch "$config_file"
+        echo "Created config file: $config_file" >&2
+    fi
+    
+    if [[ -f "$config_file" ]]; then
+        if [[ -s "$config_file" ]]; then
+            source "$config_file" 2>/dev/null || true
+        fi
+        
+        eval "value=\"\$$key\""
+        
+        if [[ -n "$value" ]]; then
+            echo "Got $key: $value" >&2
+        else
+            echo "$key is not set in config file!" >&2
+            read -p "$tip" value
+            need_save=true
+        fi
+    fi
+    
+    if [[ "$need_save" == true ]]; then
+        local config_content=""
+        if [[ -f "$config_file" && -s "$config_file" ]]; then
+            config_content=$(cat "$config_file")
+        fi
+        
+        if echo "$config_content" | grep -q "^$key="; then
+            config_content=$(echo "$config_content" | sed "s/^$key=.*/$key=$value/")
+            echo "$config_content" > "$config_file"
+        else
+            echo "$key=$value" >> "$config_file"
+        fi
+        
+        echo "Saved $key=$value to $config_file" >&2
+    fi
+    
+    echo "$value"
+}
 
 
 deploy_noctalia() {
     local config_file="config.txt"
     local script_dir=$(dirname "$(readlink -f "$0")")
-    local LOCATION=""
-    
-    if [[ -f "$config_file" ]]; then
-        echo "Found Config: $config_file"
-        source "$config_file"
-        echo "Got LOCATION: $LOCATION"
-    else
-        echo "Config file $config_file does not exist!"
-        read -p "Enter your LOCATION for weather: " user_input
+    local LOCATION_WEATHER=$(get_config_value "LOCATION_WEATHER" "Enter your LOCATION for weather: ")
         
-        user_input_lower=$(echo "$user_input" | tr '[:upper:]' '[:lower:]')
-        LOCATION=$(echo "$user_input_lower" | sed 's/^\(.\)/\U\1/')
-        
-        echo "LOCATION=$LOCATION" > "$config_file"
-        echo "Saved LOCATION=$LOCATION to $config_file"
-    fi
-    
     
     log "Copying files..."
-    include_dirs=("niri" "noctalia")
+    local include_dirs=("niri" "noctalia")
     for dir in "${include_dirs[@]}"; do
         cp -ruv dotconfig/$dir $HOME/.config/
     done
-    include_systemd_services=("noctalia")
+    local include_systemd_services=("noctalia")
     mkdir -p ${HOME}/.config/systemd/user
     for serv in "${include_systemd_services[@]}"; do
         cp -ruv "dotconfig/systemd/user/${serv}.service" "${HOME}/.config/systemd/user/${serv}.service"
@@ -53,7 +82,7 @@ deploy_noctalia() {
     systemctl --user mask swaync.service
 
     niri msg action spawn-sh -- "qs -c noctalia-shell > /dev/null 2>&1"
-    sed -i "s/\"name\": \"LOCATION\"/\"name\": \"$LOCATION\"/g" "$HOME/.config/noctalia/settings.json"
+    sed -i "s/\"name\": \"LOCATION\"/\"name\": \"$LOCATION_WEATHER\"/g" "$HOME/.config/noctalia/settings.json"
     sed -i "s/USERNAME/$(whoami)/g" "$HOME/.config/noctalia/settings.json"
     sed -i "s/^spawn-at-startup \"waybar\".*/\/\/spawn-at-startup \"waybar\"/" $HOME/.config/niri/config.kdl
     sed -i 's/^    Super+Alt+L.*/    Super+Alt+L hotkey-overlay-title="Lock the Screen: noctalia-shell" { spawn-sh "qs -c noctalia-shell ipc call lockScreen toggle"; }/' $HOME/.config/niri/config.kdl
@@ -62,11 +91,11 @@ deploy_noctalia() {
 
 deploy_waybar() {
     log "Copying files..."
-    include_dirs=("niri" "swaylock" "swaync" "waybar")
+    local include_dirs=("niri" "swaylock" "swaync" "waybar")
     for dir in "${include_dirs[@]}"; do
         cp -ruv dotconfig/$dir $HOME/.config/
     done
-    include_systemd_services=("swaybg" "swayidle" "swaync_auto")
+    local include_systemd_services=("swaybg" "swayidle" "swaync_auto")
     mkdir -p ${HOME}/.config/systemd/user
     for serv in "${include_systemd_services[@]}"; do
         cp -ruv "dotconfig/systemd/user/${serv}.service" "${HOME}/.config/systemd/user/${serv}.service"
@@ -90,8 +119,32 @@ deploy_waybar() {
 }
 
 
+deploy_mpd() {
+    log "Copying files..."
+    local include_dirs=("mpd")
+    for dir in "${include_dirs[@]}"; do
+        cp -ruv dotconfig/$dir $HOME/.config/
+    done
+
+
+    local MUSIC_DIRECTORY=$(get_config_value "MUSIC_DIRECTORY" "Enter your MUSIC_DIRECTORY for mpd: ")
+    sed -i "s#MUSIC_DIRECTORY#${MUSIC_DIRECTORY}#g" "$HOME/.config/mpd/mpd.conf"
+}
+
+deploy_ncmpcpp() {
+    log "Copying files..."
+    include_dirs=("ncmpcpp")
+    for dir in "${include_dirs[@]}"; do
+        cp -ruv dotconfig/$dir $HOME/.config/
+    done
+
+
+    local MUSIC_DIRECTORY=$(get_config_value "MUSIC_DIRECTORY" "Enter your MUSIC_DIRECTORY for mpd: ")
+    sed -i "s#MUSIC_DIRECTORY#${MUSIC_DIRECTORY}#g" "$HOME/.config/ncmpcpp/config"
+}
+
 log "Stopping services..."
-services=("noctalia" "swaybg" "swaync_auto" "swaync" "vicinae" "waybar" "qs")
+services=("noctalia" "swaybg" "swaync_auto" "swaync" "vicinae" "waybar" "qs" "mpd" "ncmpcpp")
 for s in "${services[@]}"; do
   killall $s
   systemctl --user stop --now "$s"
@@ -99,6 +152,7 @@ for s in "${services[@]}"; do
 done
 
 
+# Desktop and status bar deployment
 if [[ " $@ " =~ " --clean " ]]; then
     log "Running clean deployment..."
     for f in $(ls -d dotconfig/*/ | sed 's#dotconfig/##')
@@ -110,6 +164,14 @@ else
     echo ""
 fi
 
+
+# Music player deployment
+deploy_mpd
+deploy_ncmpcpp
+
+
+THEME_CURSOR=$(get_config_value "THEME_CURSOR" "Enter your THEME_CURSOR (e.g. Banana): ")
+THEME_CURSOR_SIZE=$(get_config_value "THEME_CURSOR_SIZE" "Enter your THEME_CURSOR_SIZE (e.g. 24): ")
 
 log "Patching ~/.zshrc for cursor theme and size"
 sed -i "s/^gtk-cursor-theme-name.*/gtk-cursor-theme-name=\"$THEME_CURSOR\"/" $HOME/.gtkrc-2.0
