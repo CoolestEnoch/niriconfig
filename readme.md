@@ -44,6 +44,10 @@ To use `mpd`, install dependencies below:
 sudo pacman -S ncmpcpp mpd wildmidi timidity++ mpc
 ```
 
+## Visualizer
+This also support audio visualizer `cava`, you can configure it with its [official document](https://github.com/karlstav/cava).
+In my configuration, only simply use the pulseaudio as the source, and the wave form. It is also compatible with `pipewire` without changing configuration file.
+
 
 # How to change fonts?
 Download font from KDE Theme Store or other site, uncompress it to `~/.icons`. Then remember the cursor theme's name, open the `deploy.sh` and change the `THEME_CURSOR` to theme's name, and `THEME_CURSOR_SIZE` to cursor's size \(default is 24\) value to what you want, then rerun `deploy.sh` again to live patch cursor theme settings.

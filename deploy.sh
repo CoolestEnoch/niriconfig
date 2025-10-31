@@ -154,8 +154,20 @@ deploy_ncmpcpp() {
     sed -i "s#MUSIC_DIRECTORY#${MUSIC_DIRECTORY}#g" "$HOME/.config/ncmpcpp/config"
 }
 
+deploy_cava() {
+    log "[cava] Copying files..."
+    include_dirs=("cava")
+    for dir in "${include_dirs[@]}"; do
+        cp -ruv dotconfig/$dir $HOME/.config/
+    done
+
+
+    local MUSIC_DIRECTORY=$(get_config_value "MUSIC_DIRECTORY" "Enter your MUSIC_DIRECTORY for mpd: ")
+    sed -i "s#MUSIC_DIRECTORY#${MUSIC_DIRECTORY}#g" "$HOME/.config/ncmpcpp/config"
+}
+
 log "Stopping services..."
-services=("noctalia" "swaybg" "swaync_auto" "swaync" "vicinae" "waybar" "qs" "mpd" "ncmpcpp")
+services=("noctalia" "swaybg" "swaync_auto" "swaync" "vicinae" "waybar" "qs" "mpd" "ncmpcpp" "cava")
 for s in "${services[@]}"; do
   killall $s
   systemctl --user stop --now "$s"
@@ -181,6 +193,7 @@ if command -v mpd > /dev/null 2>&1; then
     log "Found mpd! Now apply related settings..."
     deploy_mpd
     deploy_ncmpcpp
+    deploy_cava
 fi
 
 
