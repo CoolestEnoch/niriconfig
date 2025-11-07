@@ -3,11 +3,14 @@ After you installed `sddm` and necessary applications from KDE Plasma like `dolp
 ``` shell
 sudo pacman -S --needed niri alacritty fuzzel swaylock swayidle waybar swaybg xwayland-satellite brightnessctl 
 ```
+You can also use `gdm` and applications from GNOME.
+
+
 If you want to use `waybar`, please install `network-manager-applet` and `blueman` to control these two hardware.
 
 # How to apply?
 ``` shell
-cd dotconfig && chmod +x deploy.sh && ./deploy.sh
+chmod +x deploy.sh && ./deploy.sh
 ```
 Then log out your session, choose `niri` instead of `KDE Plasma(Wayland)` in the left-bottom corner, enter your password and login.
 
@@ -45,11 +48,15 @@ sudo pacman -S ncmpcpp mpd wildmidi timidity++ mpc
 ```
 
 ## Visualizer
+### `ncmpcpp`
+You can use `ncmpcpp` to visualize your playing music in `mpd`. You can configure it refer to [Arch Wiki](https://wiki.archlinux.org/title/Ncmpcpp).
+
+### `cava`
 This also support audio visualizer `cava`, you can configure it with its [official document](https://github.com/karlstav/cava).
 In my configuration, only simply use the pulseaudio as the source, and the wave form. It is also compatible with `pipewire` without changing configuration file.
 
 
-# How to change fonts?
+# How to change cursor?
 Download font from KDE Theme Store or other site, uncompress it to `~/.icons`. Then remember the cursor theme's name, open the `deploy.sh` and change the `THEME_CURSOR` to theme's name, and `THEME_CURSOR_SIZE` to cursor's size \(default is 24\) value to what you want, then rerun `deploy.sh` again to live patch cursor theme settings.
 
 
@@ -98,4 +105,5 @@ If you occur into problems with `wayland`, add this param:
 [ArchWiki - XDG MIME Applications](https://wiki.archlinux.org/title/XDG_MIME_Applications#Empty_MIME_associations_/_open_with_menu_in_KDE)
 [Swaylock GitHub 仓库](https://github.com/swaywm/swaylock)
 [Swaylock 参数解释 GitHub 仓库](https://github.com/swaywm/swaylock/blob/master/swaylock.1.scd)
+[(ArchlinuxCN Forum)Hyprland下, KDE软件无法识别应用列表](https://forum.archlinuxcn.org/t/topic/14317/6)
 
