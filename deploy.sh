@@ -213,6 +213,12 @@ sed -i "s/^export XCURSOR_THEME=.*/export XCURSOR_THEME=\"$THEME_CURSOR\"/" $HOM
 sed -i "s/^export XCURSOR_SIZE=.*/export XCURSOR_SIZE=\"$THEME_CURSOR_SIZE\"/" $HOME/.zshrc
 
 
+if [ ! -f ~/.config/menus/applications.menu ]; then
+    log "Patching applications.menu for dolphin..."
+    ln -sf /etc/xdg/menus/plasma-applications.menu ~/.config/menus/applications.menu
+fi
+
+
 if command -v qs > /dev/null 2>&1; then
     log "Detected noctalia, using noctalia config."
     if ! command -v matugen > /dev/null 2>&1; then

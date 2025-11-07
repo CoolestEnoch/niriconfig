@@ -228,7 +228,7 @@
     "exec": "$HOME/.config/waybar/weather.sh",
     "on-click": "$HOME/.config/waybar/weather.sh --webui",
     "format": "{} ",
-    "interval": 3600,
+    "interval": 900,
     "tooltip": true,
     "tooltip-format": "{} \n单击查询详细天气"
   },
