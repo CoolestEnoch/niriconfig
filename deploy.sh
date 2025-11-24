@@ -88,6 +88,7 @@ deploy_noctalia() {
     sed -i "s/^spawn-at-startup \"waybar\".*/\/\/spawn-at-startup \"waybar\"/" $HOME/.config/niri/config.kdl
     sed -i 's/^    Super+Alt+L.*/    Super+Alt+L hotkey-overlay-title="Lock the Screen: noctalia-shell" { spawn-sh "qs -c noctalia-shell ipc call lockScreen toggle"; }/' $HOME/.config/niri/config.kdl
     sed -i 's/vicinae toggle/qs -c noctalia-shell ipc call launcher clipboard/g' $HOME/.config/niri/config.kdl
+    sed -i 's/wallpaper\$/noctalia-overview\*/g' $HOME/.config/niri/config.kdl
 }
 
 deploy_waybar() {
