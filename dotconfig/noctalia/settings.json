@@ -33,7 +33,7 @@
         "marginVertical": 0.25,
         "monitors": [
         ],
-        "outerCorners": true,
+        "outerCorners": false,
         "position": "top",
         "showCapsule": true,
         "widgets": {
@@ -83,6 +83,16 @@
             ],
             "right": [
                 {
+                    "blacklist": [
+                    ],
+                    "colorizeIcons": true,
+                    "drawerEnabled": false,
+                    "id": "Tray",
+                    "pinned": [
+                        "Fcitx"
+                    ]
+                },
+                {
                     "displayMode": "onhover",
                     "id": "WiFi"
                 },
@@ -92,20 +102,7 @@
                 },
                 {
                     "displayMode": "onhover",
-                    "id": "Brightness"
-                },
-                {
-                    "displayMode": "onhover",
                     "id": "Volume"
-                },
-                {
-                    "blacklist": [
-                    ],
-                    "colorizeIcons": false,
-                    "drawerEnabled": true,
-                    "id": "Tray",
-                    "pinned": [
-                    ]
                 },
                 {
                     "hideWhenZero": true,
