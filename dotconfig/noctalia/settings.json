@@ -73,19 +73,19 @@
                     "id": "MediaMini",
                     "maxWidth": 145,
                     "scrollingMode": "hover",
-                    "showAlbumArt": false,
+                    "showAlbumArt": true,
                     "showArtistFirst": true,
                     "showProgressRing": true,
                     "showVisualizer": false,
                     "useFixedWidth": false,
-                    "visualizerType": "linear"
+                    "visualizerType": "wave"
                 }
             ],
             "right": [
                 {
                     "blacklist": [
                     ],
-                    "colorizeIcons": true,
+                    "colorizeIcons": false,
                     "drawerEnabled": false,
                     "id": "Tray",
                     "pinned": [
@@ -97,7 +97,7 @@
                     "id": "WiFi"
                 },
                 {
-                    "displayMode": "onhover",
+                    "displayMode": "alwaysShow",
                     "id": "Bluetooth"
                 },
                 {
@@ -330,7 +330,7 @@
             {
                 "action": "hibernate",
                 "countdownEnabled": true,
-                "enabled": true
+                "enabled": false
             },
             {
                 "action": "reboot",
