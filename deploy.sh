@@ -82,13 +82,13 @@ deploy_noctalia() {
     systemctl --user add-wants niri.service noctalia.service
     systemctl --user mask swaync.service
 
-    niri msg action spawn-sh -- "qs -c noctalia-shell > /dev/null 2>&1"
     sed -i "s/\"name\": \"LOCATION\"/\"name\": \"$LOCATION_WEATHER\"/g" "$HOME/.config/noctalia/settings.json"
     sed -i "s/USERNAME/$(whoami)/g" "$HOME/.config/noctalia/settings.json"
     sed -i "s/^spawn-at-startup \"waybar\".*/\/\/spawn-at-startup \"waybar\"/" $HOME/.config/niri/config.kdl
     sed -i 's/^    Super+Alt+L.*/    Super+Alt+L hotkey-overlay-title="Lock the Screen: noctalia-shell" { spawn-sh "qs -c noctalia-shell ipc call lockScreen lock"; }/' $HOME/.config/niri/config.kdl
     sed -i 's/vicinae toggle/qs -c noctalia-shell ipc call launcher clipboard/g' $HOME/.config/niri/config.kdl
     sed -i 's/wallpaper\$/noctalia-overview\*/g' $HOME/.config/niri/config.kdl
+    niri msg action spawn-sh -- "qs -c noctalia-shell > /dev/null 2>&1"
 }
 
 deploy_waybar() {
@@ -167,6 +167,80 @@ deploy_cava() {
     sed -i "s#MUSIC_DIRECTORY#${MUSIC_DIRECTORY}#g" "$HOME/.config/ncmpcpp/config"
 }
 
+surface_patch(){
+    PRODUCT_NAME=$(cat /sys/class/dmi/id/product_name 2>/dev/null)
+    if [[ "$PRODUCT_NAME" == *"Surface"* ]]; then
+        log "This is a Surface device: $PRODUCT_NAME, now running Surface patch..."
+        CONFIG_FILE_NIRI="$HOME/.config/niri/config.kdl"
+        CONFIG_FILE_WAYBAR="$HOME/.config/waybar/config.jsonc"
+
+        log "Patching ~/.config/niri/config.kdl ..."
+        sed -i 's/mode "1920x1080@60"/mode "1920x1280@60"/' "$CONFIG_FILE_NIRI"
+        sed -i 's/scale 1.125/scale 1.25/' "$CONFIG_FILE_NIRI"
+        sed -i 's/position x=1080 y=0/position x=1280 y=0/' "$CONFIG_FILE_NIRI"
+        log "Patching ~/.config/waybar/config.jsonc ..."
+        sed -i '/"wlr\/taskbar"$/{/[{]/!d}' "$CONFIG_FILE_WAYBAR"
+        sed -i 's/"tray"\,/"tray"/' "$CONFIG_FILE_WAYBAR"
+        sed -i 's/"artist-len": 7\,/"artist-len": 5\,/' "$CONFIG_FILE_WAYBAR"
+        sed -i "s/^    \"artist-len\": .*/    \"artist-len\": 5,/g" "$CONFIG_FILE_WAYBAR"
+        sed -i "s/^    \"title-len\": .*/    \"title-len\": 5,/g" "$CONFIG_FILE_WAYBAR"
+    fi
+}
+
+
+# Start here.
+
+# Unit re-deploy
+# mpd
+if [[ " $@ " =~ " --mpdonly " ]]; then
+    if command -v mpd > /dev/null 2>&1; then
+        log "Found mpd! Now apply related settings..."
+        log "Stopping services..."
+        services=("mpd" "ncmpcpp" "cava")
+        for s in "${services[@]}"; do
+            killall $s
+            systemctl --user stop --now "$s"
+            systemctl --user disable --now "$s"
+        done
+        log "Removing files..."
+        folders=("cava" "mpd" "ncmpcpp")
+        for f in "${folders[@]}"; do
+            rm -rv "$HOME/.config/${f}"
+        done
+        log "Deploying mpd..."
+        deploy_mpd
+        deploy_ncmpcpp
+        deploy_cava
+    else
+        log "mpd not found!"
+    fi
+    exit 0
+fi
+
+# niri
+if [[ " $@ " =~ " --nirionly " ]]; then
+    rm -rv "$HOME/.config/niri"
+    cp -ruv dotconfig/niri "$HOME/.config"
+    THEME_CURSOR=$(get_config_value "THEME_CURSOR" "Enter your THEME_CURSOR (e.g. Banana): ")
+    THEME_CURSOR_SIZE=$(get_config_value "THEME_CURSOR_SIZE" "Enter your THEME_CURSOR_SIZE (e.g. 24): ")
+    sed -i "s/^    XCURSOR_THEME.*/    XCURSOR_THEME \"$THEME_CURSOR\"/" dotconfig/niri/config.kdl
+    sed -i "s/^    XCURSOR_SIZE.*/    XCURSOR_SIZE \"$THEME_CURSOR_SIZE\"/" dotconfig/niri/config.kdl
+    sed -i "s/^    xcursor-theme.*/    xcursor-theme \"$THEME_CURSOR\"/" dotconfig/niri/config.kdl
+    sed -i "s/^    xcursor-size.*/    xcursor-size $THEME_CURSOR_SIZE/" dotconfig/niri/config.kdl
+    if command -v qs > /dev/null 2>&1; then
+        log "Running patch for noctalia..."
+        log "Detected noctalia, using noctalia config."
+        sed -i "s/^spawn-at-startup \"waybar\".*/\/\/spawn-at-startup \"waybar\"/" $HOME/.config/niri/config.kdl
+        sed -i 's/^    Super+Alt+L.*/    Super+Alt+L hotkey-overlay-title="Lock the Screen: noctalia-shell" { spawn-sh "qs -c noctalia-shell ipc call lockScreen lock"; }/' $HOME/.config/niri/config.kdl
+        sed -i 's/vicinae toggle/qs -c noctalia-shell ipc call launcher clipboard/g' $HOME/.config/niri/config.kdl
+        sed -i 's/wallpaper\$/noctalia-overview\*/g' $HOME/.config/niri/config.kdl
+    fi
+    surface_patch
+    exit 0
+fi
+
+
+# Re-deploy all stuffs.
 log "Stopping services..."
 services=("noctalia" "swaybg" "swaync_auto" "swaync" "vicinae" "waybar" "qs" "mpd" "ncmpcpp" "cava")
 for s in "${services[@]}"; do
@@ -180,6 +254,10 @@ done
 if [[ " $@ " =~ " --clean " ]]; then
     log "Running clean deployment..."
     for f in $(ls -d dotconfig/*/ | sed 's#dotconfig/##')
+    do
+        rm -rv "$HOME/.config/${f}"
+    done
+    for f in $(ls -d deprecated/*/ | sed 's#deprecated/##')
     do
         rm -rv "$HOME/.config/${f}"
     done
@@ -242,23 +320,7 @@ log "!!! Remember to run source ~/.zshrc then! !!!"
 
 
 
-PRODUCT_NAME=$(cat /sys/class/dmi/id/product_name 2>/dev/null)
-if [[ "$PRODUCT_NAME" == *"Surface"* ]]; then
-    log "This is a Surface device: $PRODUCT_NAME, now running Surface patch..."
-    CONFIG_FILE_NIRI="$HOME/.config/niri/config.kdl"
-    CONFIG_FILE_WAYBAR="$HOME/.config/waybar/config.jsonc"
-    
-    log "Patching ~/.config/niri/config.kdl ..."
-    sed -i 's/mode "1920x1080@60"/mode "1920x1280@60"/' "$CONFIG_FILE_NIRI"
-    sed -i 's/scale 1.125/scale 1.25/' "$CONFIG_FILE_NIRI"
-    sed -i 's/position x=1080 y=0/position x=1280 y=0/' "$CONFIG_FILE_NIRI"
-    log "Patching ~/.config/waybar/config.jsonc ..."
-    sed -i '/"wlr\/taskbar"$/{/[{]/!d}' "$CONFIG_FILE_WAYBAR"
-    sed -i 's/"tray"\,/"tray"/' "$CONFIG_FILE_WAYBAR"
-    sed -i 's/"artist-len": 7\,/"artist-len": 5\,/' "$CONFIG_FILE_WAYBAR"
-    sed -i "s/^    \"artist-len\": .*/    \"artist-len\": 5,/g" "$CONFIG_FILE_WAYBAR"
-    sed -i "s/^    \"title-len\": .*/    \"title-len\": 5,/g" "$CONFIG_FILE_WAYBAR"
-fi
+surface_patch
 
 
 log "Enjoy!"
