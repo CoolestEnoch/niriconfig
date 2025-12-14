@@ -108,6 +108,34 @@
                     "showVisualizer": false,
                     "useFixedWidth": false,
                     "visualizerType": "wave"
+                },
+                {
+                    "hideMode": "alwaysExpanded",
+                    "icon": "music-code",
+                    "id": "CustomButton",
+                    "leftClickExec": "mpc toggle",
+                    "leftClickUpdateText": true,
+                    "maxTextLength": {
+                        "horizontal": 40,
+                        "vertical": 40
+                    },
+                    "middleClickExec": "mpc prev",
+                    "middleClickUpdateText": true,
+                    "parseJson": false,
+                    "rightClickExec": "mpc next",
+                    "rightClickUpdateText": true,
+                    "showIcon": true,
+                    "textCollapse": "",
+                    "textCommand": "mpc current 2>/dev/null || echo \"\"",
+                    "textIntervalMs": 3000,
+                    "textStream": false,
+                    "wheelDownExec": "",
+                    "wheelDownUpdateText": false,
+                    "wheelExec": "",
+                    "wheelMode": "unified",
+                    "wheelUpExec": "",
+                    "wheelUpUpdateText": false,
+                    "wheelUpdateText": false
                 }
             ],
             "right": [

@@ -123,7 +123,8 @@ layout {
     // 工作区遮罩改为半透明
     background-color "transparent"
     // Set gaps around windows in logical pixels.
-    gaps 16
+    // 默认窗口大小，离屏幕四边的距离
+    gaps 16  
 
     // When to center a column when changing focus, options are:
     // - "never", default behavior, focusing an off-screen column will keep at the left
@@ -283,12 +284,12 @@ layout {
 environment {
     XDG_CURRENT_DESKTOP "gnome" //修复某些程序打开后是浅色主题
     XCURSOR_PATH "~/.icons"
-    XCURSOR_THEME "Banana"
+    XCURSOR_THEME "Hatsune-Miku"
     XCURSOR_SIZE "24"
 }
 
 cursor {
-    xcursor-theme "Banana"
+    xcursor-theme "Hatsune-Miku"
     xcursor-size 24
 }
 
