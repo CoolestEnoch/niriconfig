@@ -284,12 +284,12 @@ layout {
 environment {
     XDG_CURRENT_DESKTOP "gnome" //修复某些程序打开后是浅色主题
     XCURSOR_PATH "~/.icons"
-    XCURSOR_THEME "Hatsune-Miku"
+    XCURSOR_THEME "Banana"
     XCURSOR_SIZE "24"
 }
 
 cursor {
-    xcursor-theme "Hatsune-Miku"
+    xcursor-theme "Banana"
     xcursor-size 24
 }
 

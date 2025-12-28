@@ -8,7 +8,7 @@ log() {
     fi
 }
 
-# Example: 
+# Example:
 # get_config_value "YOUR_KEY" "Tip for user to enter"
 get_config_value() {
     local key="$1"
@@ -64,7 +64,7 @@ deploy_noctalia() {
     local config_file="config.txt"
     local script_dir=$(dirname "$(readlink -f "$0")")
     local LOCATION_WEATHER=$(get_config_value "LOCATION_WEATHER" "Enter your LOCATION for weather: ")
-        
+    
     
     log "Copying files..."
     local include_dirs=("niri" "noctalia")
@@ -76,12 +76,12 @@ deploy_noctalia() {
     for serv in "${include_systemd_services[@]}"; do
         cp -ruv "dotconfig/systemd/user/${serv}.service" "${HOME}/.config/systemd/user/${serv}.service"
     done
-
+    
     log "Reloading services..."
     systemctl --user daemon-reload
     systemctl --user add-wants niri.service noctalia.service
     systemctl --user mask swaync.service
-
+    
     sed -i "s/\"name\": \"LOCATION\"/\"name\": \"$LOCATION_WEATHER\"/g" "$HOME/.config/noctalia/settings.json"
     sed -i "s/USERNAME/$(whoami)/g" "$HOME/.config/noctalia/settings.json"
     sed -i "s/^spawn-at-startup \"waybar\".*/\/\/spawn-at-startup \"waybar\"/" $HOME/.config/niri/config.kdl
@@ -102,20 +102,20 @@ deploy_waybar() {
     for serv in "${include_systemd_services[@]}"; do
         cp -ruv "dotconfig/systemd/user/${serv}.service" "${HOME}/.config/systemd/user/${serv}.service"
     done
-
+    
     log "Reloading services..."
     systemctl --user daemon-reload
     systemctl --user add-wants niri.service swaybg.service
     systemctl --user add-wants niri.service swaync_auto.service
     systemctl --user add-wants niri.service vicinae.service
-
-
+    
+    
     pkill waybar
     niri msg action spawn-sh -- "waybar"
-
+    
     pkill swaync
     systemctl --user restart --now swaync_auto.service
-
+    
     systemctl --user restart --now swaybg.service
     systemctl --user restart --now vicinae.service
 }
@@ -127,8 +127,8 @@ deploy_mpd() {
     for dir in "${include_dirs[@]}"; do
         cp -ruv dotconfig/$dir $HOME/.config/
     done
-
-
+    
+    
     local MUSIC_DIRECTORY=$(get_config_value "MUSIC_DIRECTORY" "Enter your MUSIC_DIRECTORY for mpd: ")
     local parent=$(dirname "$MUSIC_DIRECTORY")
     local targetfolder=$(basename "$MUSIC_DIRECTORY")
@@ -149,8 +149,8 @@ deploy_ncmpcpp() {
     for dir in "${include_dirs[@]}"; do
         cp -ruv dotconfig/$dir $HOME/.config/
     done
-
-
+    
+    
     local MUSIC_DIRECTORY=$(get_config_value "MUSIC_DIRECTORY" "Enter your MUSIC_DIRECTORY for mpd: ")
     sed -i "s#MUSIC_DIRECTORY#${MUSIC_DIRECTORY}#g" "$HOME/.config/ncmpcpp/config"
 }
@@ -161,17 +161,31 @@ deploy_cava() {
     for dir in "${include_dirs[@]}"; do
         cp -ruv dotconfig/$dir $HOME/.config/
     done
-
-
+    
+    
     local MUSIC_DIRECTORY=$(get_config_value "MUSIC_DIRECTORY" "Enter your MUSIC_DIRECTORY for mpd: ")
     sed -i "s#MUSIC_DIRECTORY#${MUSIC_DIRECTORY}#g" "$HOME/.config/ncmpcpp/config"
+}
+
+fix_font() {
+    log "[fontconfig] Removing files..."
+    folders=("fontconfig")
+    for f in "${folders[@]}"; do
+        rm -rv "$HOME/.config/${f}"
+    done
+    log "[fontconfig] Copying files..."
+    local include_dirs=("fontconfig")
+    for dir in "${include_dirs[@]}"; do
+        cp -ruv dotconfig/$dir $HOME/.config/
+    done
+    fc-cache -fv
 }
 
 cursor_patch(){
     THEME_CURSOR=$(get_config_value "THEME_CURSOR" "Enter your THEME_CURSOR (e.g. Banana): ")
     THEME_CURSOR_SIZE=$(get_config_value "THEME_CURSOR_SIZE" "Enter your THEME_CURSOR_SIZE (e.g. 24): ")
     cp -ruv dotconfig/niri/config.kdl ~/.config/niri/config.kdl
-
+    
     log "Patching ~/.zshrc for cursor theme and size"
     sed -i "s/^gtk-cursor-theme-name.*/gtk-cursor-theme-name=\"$THEME_CURSOR\"/" $HOME/.gtkrc-2.0
     sed -i "s/^Gtk\/CursorThemeName.*/Gtk\/CursorThemeName \"$THEME_CURSOR\"/" $HOME/.config/xsettingsd/xsettingsd.conf
@@ -191,7 +205,7 @@ surface_patch(){
         log "This is a Surface device: $PRODUCT_NAME, now running Surface patch..."
         CONFIG_FILE_NIRI="$HOME/.config/niri/config.kdl"
         CONFIG_FILE_WAYBAR="$HOME/.config/waybar/config.jsonc"
-
+        
         log "Patching ~/.config/niri/config.kdl ..."
         sed -i 's/mode "1920x1080@60"/mode "1920x1280@60"/' "$CONFIG_FILE_NIRI"
         sed -i 's/scale 1.125/scale 1.25/' "$CONFIG_FILE_NIRI"
@@ -232,6 +246,12 @@ if [[ " $@ " =~ " --mpdonly " ]]; then
     else
         log "mpd not found!"
     fi
+    exit 0
+fi
+
+# fontconfig
+if [[ " $@ " =~ " --fix-font " ]]; then
+    fix_font
     exit 0
 fi
 
@@ -277,27 +297,22 @@ fi
 log "Stopping services..."
 services=("noctalia" "swaybg" "swaync_auto" "swaync" "vicinae" "waybar" "qs" "mpd" "ncmpcpp" "cava")
 for s in "${services[@]}"; do
-  killall $s
-  systemctl --user stop --now "$s"
-  systemctl --user disable --now "$s"
+    killall $s
+    systemctl --user stop --now "$s"
+    systemctl --user disable --now "$s"
 done
 
 
 # Desktop and status bar deployment
-if [[ " $@ " =~ " --clean " ]]; then
-    log "Running clean deployment..."
-    for f in $(ls -d dotconfig/*/ | sed 's#dotconfig/##')
-    do
-        rm -rv "$HOME/.config/${f}"
-    done
-    for f in $(ls -d deprecated/*/ | sed 's#deprecated/##')
-    do
-        rm -rv "$HOME/.config/${f}"
-    done
-else
-    log "Run with --clean param to start a clean deployment."
-    echo ""
-fi
+log "Running clean deployment..."
+for f in $(ls -d dotconfig/*/ | sed 's#dotconfig/##')
+do
+    rm -rv "$HOME/.config/${f}"
+done
+for f in $(ls -d deprecated/*/ | sed 's#deprecated/##')
+do
+    rm -rv "$HOME/.config/${f}"
+done
 
 
 # Music player deployment
@@ -310,7 +325,7 @@ fi
 
 
 cursor_patch
-
+fix_font
 
 if [ ! -f ~/.config/menus/applications.menu ]; then
     log "Patching applications.menu for dolphin..."
@@ -336,11 +351,7 @@ else
     deploy_waybar
 fi
 
-log "!!! Remember to run source ~/.zshrc then! !!!"
-
-
-
 surface_patch
 
-
+log "!!! Remember to run source ~/.zshrc then! !!!"
 log "Enjoy!"
