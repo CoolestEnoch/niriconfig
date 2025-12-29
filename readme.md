@@ -6,20 +6,13 @@ sudo pacman -S --needed niri alacritty fuzzel swaylock swayidle waybar swaybg xw
 You can also use `gdm` and applications from GNOME.
 
 
-If you want to use `waybar`, please install `network-manager-applet` and `blueman` to control these two hardware.
+If you want to use `waybar`, please install `network-manager-applet` (a.k.a `nm-tray` or `nm-tray-git`) and `blueman` to control these two hardware.
 
 # How to apply?
 ``` shell
 chmod +x deploy.sh && ./deploy.sh
 ```
 Then log out your session, choose `niri` instead of `KDE Plasma(Wayland)` in the left-bottom corner, enter your password and login.
-
-
-If you want to run a clean-deployment, please add `--clean` param to the scipt.
-e.g.
-``` shell
-./deploy.sh --clean
-```
 
 
 If you have `noctalia` installed on your computer, it will use it instead of `waybar`. If you want to force use `waybar` instead of `noctalia`, please add `--waybar` param to the script.
@@ -35,6 +28,9 @@ paru -Sy noctalia-shell matugen-bin cliphist
 > `matugen` is an optional dependency to extract color from your wallpaper, just like the Monet Color introduced in Android 12. See also: [dynamic colors (Android Developers)](https://developer.android.google.cn/develop/ui/views/theming/dynamic-colors)
 > `cliphist` is an optional dependency for noctalia to display clipboard history. If you have installed `vicinae` in section Clipboard History, it will be disabled by `deploy.sh`.
 
+
+# Screen Casting
+In order to work on both KDE and NIRI, you should install both `xdg-desktop-portal-kde` for KDE and `xdg-desktop-portal-wlr` for niri.
 
 
 # Music Player Support

@@ -58,15 +58,32 @@ get_config_value() {
     echo "$value"
 }
 
+deploy_dotconfig_dirs() {
+    local name="$1"
+    local -n dirs="$2"
+    local src_base="dotconfig"
+    local dst_base="$HOME/.config"
+
+    log "[$name] Removing files..."
+    for d in "${dirs[@]}"; do
+        rm -rv "${dst_base}/${d}"
+    done
+
+    log "[$name] Copying files..."
+    for d in "${dirs[@]}"; do
+        cp -ruv "${src_base}/${d}" "${dst_base}/"
+    done
+}
+
 
 deploy_noctalia() {
-    log "[noctalia] Copying files..."
+    log "[noctalia] Reading config..."
     local config_file="config.txt"
     local script_dir=$(dirname "$(readlink -f "$0")")
     local LOCATION_WEATHER=$(get_config_value "LOCATION_WEATHER" "Enter your LOCATION for weather: ")
     
     
-    log "Copying files..."
+    log "[noctalia] Copying files..."
     local include_dirs=("niri" "noctalia")
     for dir in "${include_dirs[@]}"; do
         cp -ruv dotconfig/$dir $HOME/.config/
@@ -77,7 +94,7 @@ deploy_noctalia() {
         cp -ruv "dotconfig/systemd/user/${serv}.service" "${HOME}/.config/systemd/user/${serv}.service"
     done
     
-    log "Reloading services..."
+    log "[noctalia] Reloading services..."
     systemctl --user daemon-reload
     systemctl --user add-wants niri.service noctalia.service
     systemctl --user mask swaync.service
@@ -103,7 +120,7 @@ deploy_waybar() {
         cp -ruv "dotconfig/systemd/user/${serv}.service" "${HOME}/.config/systemd/user/${serv}.service"
     done
     
-    log "Reloading services..."
+    log "[waybar] Reloading services..."
     systemctl --user daemon-reload
     systemctl --user add-wants niri.service swaybg.service
     systemctl --user add-wants niri.service swaync_auto.service
@@ -122,11 +139,8 @@ deploy_waybar() {
 
 
 deploy_mpd() {
-    log "[mpd] Copying files..."
     local include_dirs=("mpd")
-    for dir in "${include_dirs[@]}"; do
-        cp -ruv dotconfig/$dir $HOME/.config/
-    done
+    deploy_dotconfig_dirs "mpd" include_dirs
     
     
     local MUSIC_DIRECTORY=$(get_config_value "MUSIC_DIRECTORY" "Enter your MUSIC_DIRECTORY for mpd: ")
@@ -144,11 +158,8 @@ deploy_mpd() {
 }
 
 deploy_ncmpcpp() {
-    log "[ncmpcpp] Copying files..."
-    include_dirs=("ncmpcpp")
-    for dir in "${include_dirs[@]}"; do
-        cp -ruv dotconfig/$dir $HOME/.config/
-    done
+    local include_dirs=("ncmpcpp")
+    deploy_dotconfig_dirs "ncmpcpp" include_dirs
     
     
     local MUSIC_DIRECTORY=$(get_config_value "MUSIC_DIRECTORY" "Enter your MUSIC_DIRECTORY for mpd: ")
@@ -156,29 +167,22 @@ deploy_ncmpcpp() {
 }
 
 deploy_cava() {
-    log "[cava] Copying files..."
-    include_dirs=("cava")
-    for dir in "${include_dirs[@]}"; do
-        cp -ruv dotconfig/$dir $HOME/.config/
-    done
-    
-    
+    local include_dirs=("cava")
+    deploy_dotconfig_dirs "cava" include_dirs
     local MUSIC_DIRECTORY=$(get_config_value "MUSIC_DIRECTORY" "Enter your MUSIC_DIRECTORY for mpd: ")
     sed -i "s#MUSIC_DIRECTORY#${MUSIC_DIRECTORY}#g" "$HOME/.config/ncmpcpp/config"
 }
 
 fix_font() {
-    log "[fontconfig] Removing files..."
-    folders=("fontconfig")
-    for f in "${folders[@]}"; do
-        rm -rv "$HOME/.config/${f}"
-    done
-    log "[fontconfig] Copying files..."
     local include_dirs=("fontconfig")
-    for dir in "${include_dirs[@]}"; do
-        cp -ruv dotconfig/$dir $HOME/.config/
-    done
+    deploy_dotconfig_dirs "fontconfig" include_dirs
     fc-cache -fv
+}
+
+fix_xdg_portal() {
+    local include_dirs=("xdg-desktop-portal")
+    deploy_dotconfig_dirs "fix_xdg_portal" include_dirs
+    systemctl --user restart --now xdg-desktop-portal
 }
 
 cursor_patch(){
@@ -186,7 +190,7 @@ cursor_patch(){
     THEME_CURSOR_SIZE=$(get_config_value "THEME_CURSOR_SIZE" "Enter your THEME_CURSOR_SIZE (e.g. 24): ")
     cp -ruv dotconfig/niri/config.kdl ~/.config/niri/config.kdl
     
-    log "Patching ~/.zshrc for cursor theme and size"
+    log "[cursor_patch] Patching ~/.zshrc for cursor theme and size"
     sed -i "s/^gtk-cursor-theme-name.*/gtk-cursor-theme-name=\"$THEME_CURSOR\"/" $HOME/.gtkrc-2.0
     sed -i "s/^Gtk\/CursorThemeName.*/Gtk\/CursorThemeName \"$THEME_CURSOR\"/" $HOME/.config/xsettingsd/xsettingsd.conf
     sed -i "s/^gtk-cursor-theme-name.*/gtk-cursor-theme-name=$THEME_CURSOR/" $HOME/.config/gtk-4.0/settings.ini
@@ -202,15 +206,15 @@ cursor_patch(){
 surface_patch(){
     PRODUCT_NAME=$(cat /sys/class/dmi/id/product_name 2>/dev/null)
     if [[ "$PRODUCT_NAME" == *"Surface"* ]]; then
-        log "This is a Surface device: $PRODUCT_NAME, now running Surface patch..."
+        log "[surface_patch] This is a Surface device: $PRODUCT_NAME, now running Surface patch..."
         CONFIG_FILE_NIRI="$HOME/.config/niri/config.kdl"
         CONFIG_FILE_WAYBAR="$HOME/.config/waybar/config.jsonc"
         
-        log "Patching ~/.config/niri/config.kdl ..."
+        log "[surface_patch] Patching ~/.config/niri/config.kdl ..."
         sed -i 's/mode "1920x1080@60"/mode "1920x1280@60"/' "$CONFIG_FILE_NIRI"
         sed -i 's/scale 1.125/scale 1.25/' "$CONFIG_FILE_NIRI"
         sed -i 's/position x=1080 y=0/position x=1280 y=0/' "$CONFIG_FILE_NIRI"
-        log "Patching ~/.config/waybar/config.jsonc ..."
+        log "[surface_patch] Patching ~/.config/waybar/config.jsonc ..."
         sed -i '/"wlr\/taskbar"$/{/[{]/!d}' "$CONFIG_FILE_WAYBAR"
         sed -i 's/"tray"\,/"tray"/' "$CONFIG_FILE_WAYBAR"
         sed -i 's/"artist-len": 7\,/"artist-len": 5\,/' "$CONFIG_FILE_WAYBAR"
@@ -226,25 +230,20 @@ surface_patch(){
 # mpd
 if [[ " $@ " =~ " --mpdonly " ]]; then
     if command -v mpd > /dev/null 2>&1; then
-        log "Found mpd! Now apply related settings..."
-        log "Stopping services..."
+        log "[mpdonly] Found mpd! Now apply related settings..."
+        log "[mpdonly] Stopping services..."
         services=("mpd" "ncmpcpp" "cava")
         for s in "${services[@]}"; do
             killall $s
             systemctl --user stop --now "$s"
             systemctl --user disable --now "$s"
         done
-        log "Removing files..."
-        folders=("cava" "mpd" "ncmpcpp")
-        for f in "${folders[@]}"; do
-            rm -rv "$HOME/.config/${f}"
-        done
-        log "Deploying mpd..."
+        log "[mpdonly] Deploying files..."
         deploy_mpd
         deploy_ncmpcpp
         deploy_cava
     else
-        log "mpd not found!"
+        log "[mpdonly] mpd not found!"
     fi
     exit 0
 fi
@@ -266,8 +265,8 @@ if [[ " $@ " =~ " --nirionly " ]]; then
     sed -i "s/^    xcursor-theme.*/    xcursor-theme \"$THEME_CURSOR\"/" dotconfig/niri/config.kdl
     sed -i "s/^    xcursor-size.*/    xcursor-size $THEME_CURSOR_SIZE/" dotconfig/niri/config.kdl
     if command -v qs > /dev/null 2>&1; then
-        log "Running patch for noctalia..."
-        log "Detected noctalia, using noctalia config."
+        log "[nirionly] Running patch for noctalia..."
+        log "[nirionly] Detected noctalia, using noctalia config."
         sed -i "s/^spawn-at-startup \"waybar\".*/\/\/spawn-at-startup \"waybar\"/" $HOME/.config/niri/config.kdl
         sed -i 's/^    Super+Alt+L.*/    Super+Alt+L hotkey-overlay-title="Lock the Screen: noctalia-shell" { spawn-sh "qs -c noctalia-shell ipc call lockScreen lock"; }/' $HOME/.config/niri/config.kdl
         sed -i 's/vicinae toggle/qs -c noctalia-shell ipc call launcher clipboard/g' $HOME/.config/niri/config.kdl
@@ -282,8 +281,8 @@ fi
 if [[ " $@ " =~ " --cursoronly " ]]; then
     cursor_patch
     if command -v qs > /dev/null 2>&1; then
-        log "Running patch for noctalia..."
-        log "Detected noctalia, using noctalia config."
+        log "[cursoronly] Running patch for noctalia..."
+        log "[cursoronly] Detected noctalia, using noctalia config."
         sed -i "s/^spawn-at-startup \"waybar\".*/\/\/spawn-at-startup \"waybar\"/" $HOME/.config/niri/config.kdl
         sed -i 's/^    Super+Alt+L.*/    Super+Alt+L hotkey-overlay-title="Lock the Screen: noctalia-shell" { spawn-sh "qs -c noctalia-shell ipc call lockScreen lock"; }/' $HOME/.config/niri/config.kdl
         sed -i 's/vicinae toggle/qs -c noctalia-shell ipc call launcher clipboard/g' $HOME/.config/niri/config.kdl
@@ -293,8 +292,15 @@ if [[ " $@ " =~ " --cursoronly " ]]; then
 fi
 
 
+# fix portal
+if [[ " $@ " =~ " --fix-portal " ]]; then
+    fix_xdg_portal
+    exit 0
+fi
+
+
 # Re-deploy all stuffs.
-log "Stopping services..."
+log "[OVERALL] Stopping services..."
 services=("noctalia" "swaybg" "swaync_auto" "swaync" "vicinae" "waybar" "qs" "mpd" "ncmpcpp" "cava")
 for s in "${services[@]}"; do
     killall $s
@@ -304,7 +310,8 @@ done
 
 
 # Desktop and status bar deployment
-log "Running clean deployment..."
+log "[OVERALL] Running clean deployment..."
+log "[OVERALL] Removing files..."
 for f in $(ls -d dotconfig/*/ | sed 's#dotconfig/##')
 do
     rm -rv "$HOME/.config/${f}"
@@ -317,7 +324,7 @@ done
 
 # Music player deployment
 if command -v mpd > /dev/null 2>&1; then
-    log "Found mpd! Now apply related settings..."
+    log "[MPD Prober] Found mpd! Now apply related settings..."
     deploy_mpd
     deploy_ncmpcpp
     deploy_cava
@@ -328,29 +335,28 @@ cursor_patch
 fix_font
 
 if [ ! -f ~/.config/menus/applications.menu ]; then
-    log "Patching applications.menu for dolphin..."
+    log "[Patcher: applications.menu] Patching applications.menu for dolphin..."
     ln -sf /etc/xdg/menus/plasma-applications.menu ~/.config/menus/applications.menu
 fi
 
 
 if command -v qs > /dev/null 2>&1; then
-    log "Detected noctalia, using noctalia config."
+    log "[Status Bar Prober] Detected noctalia, using noctalia config."
     if ! command -v matugen > /dev/null 2>&1; then
-        log "WARNING: matugen not found! This is an optional dependency for dynamic color working with noctalia!"
+        log "[Status Bar Prober] WARNING: matugen not found! This is an optional dependency for dynamic color working with noctalia!"
     fi
     if [[ " $@ " =~ " --waybar " ]]; then
-        log "Waybar param detected, using waybar config."
+        log "[Status Bar Prober] Waybar param detected, using waybar config."
         deploy_waybar
     else
-        log "Run with --clean param to start a clean deployment."
-        echo ""
         deploy_noctalia
     fi
 else
-    log "Noctalia not found, using waybar config."
+    log "[Status Bar Prober] Noctalia not found, using waybar config."
     deploy_waybar
 fi
 
+fix_xdg_portal
 surface_patch
 
 log "!!! Remember to run source ~/.zshrc then! !!!"
