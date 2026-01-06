@@ -176,6 +176,7 @@ deploy_cava() {
 fix_font() {
     local include_dirs=("fontconfig")
     deploy_dotconfig_dirs "fontconfig" include_dirs
+    rm -rv "$HOME/.cache/fontconfig/*"
     fc-cache -fv
 }
 
