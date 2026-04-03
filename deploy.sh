@@ -106,6 +106,7 @@ deploy_noctalia() {
     sed -i 's/vicinae toggle/qs -c noctalia-shell ipc call launcher clipboard/g' $HOME/.config/niri/config.kdl
     sed -i 's/wallpaper\$/noctalia-overview\*/g' $HOME/.config/niri/config.kdl
     niri msg action spawn-sh -- "qs -c noctalia-shell > /dev/null 2>&1"
+    systemctl --user restart --now noctalia.service 
 }
 
 deploy_waybar() {
@@ -135,6 +136,35 @@ deploy_waybar() {
     
     systemctl --user restart --now swaybg.service
     systemctl --user restart --now vicinae.service
+}
+
+
+deploy_kitty(){    
+    if command -v kitty > /dev/null 2>&1; then
+        log "[kitty] Found kitty!"
+        read -p "Use kitty? [Y/n] " answer
+        case "$answer" in
+            [Nn]*)
+                log "[kitty] Skipping kitty deployment as per user choice."
+                return 0
+                ;;
+            *)
+                log "[kitty] Proceeding with kitty deployment..."
+                ;;
+        esac
+
+        log "[kitty] Copying files..."
+        local include_dirs=("kitty")
+        for dir in "${include_dirs[@]}"; do
+            cp -ruv dotconfig/$dir $HOME/.config/
+        done
+
+        log "[kitty] Applying related settings..."
+        sed -i 's/Open a Terminal: alacritty/Open a Terminal: kitty/; s/spawn "alacritty"/spawn "kitty"/' $HOME/.config/niri/config.kdl
+        sed -i 's/app-id="Alacritty"/app-id="kitty"/g' $HOME/.config/niri/config.kdl
+    else
+        log "[kitty] kitty not found!"
+    fi
 }
 
 
@@ -274,6 +304,15 @@ if [[ " $@ " =~ " --nirionly " ]]; then
         sed -i 's/wallpaper\$/noctalia-overview\*/g' $HOME/.config/niri/config.kdl
     fi
     surface_patch
+    deploy_kitty
+    exit 0
+fi
+
+
+# kitty
+if [[ " $@ " =~ " --kittyonly " ]]; then
+    rm -rv "$HOME/.config/kitty"
+    deploy_kitty
     exit 0
 fi
 
@@ -356,6 +395,8 @@ else
     log "[Status Bar Prober] Noctalia not found, using waybar config."
     deploy_waybar
 fi
+
+deploy_kitty
 
 fix_xdg_portal
 surface_patch
