@@ -75,8 +75,63 @@ deploy_dotconfig_dirs() {
     done
 }
 
+get_noctalia_version() {
+    local config_home="${XDG_CONFIG_HOME:-$HOME/.config}"
+    local config_dirs="${XDG_CONFIG_DIRS:-/etc/xdg}"
+    local config_dir
+
+    # v5 优先；v4 和 v5 同时存在时返回 v5
+    if command -v noctalia >/dev/null 2>&1; then
+        printf '%s\n' "v5"
+        return 0
+    fi
+
+    # 部分发行版可能提供独立的 noctalia-shell 命令
+    if command -v noctalia-shell >/dev/null 2>&1; then
+        printf '%s\n' "v4"
+        return 0
+    fi
+
+    # v4 通常使用 qs，并以 noctalia-shell 作为 Quickshell 配置
+    if command -v qs >/dev/null 2>&1; then
+        # 用户级手动安装
+        if [[ -d "$config_home/quickshell/noctalia-shell" ]]; then
+            printf '%s\n' "v4"
+            return 0
+        fi
+
+        # 系统级安装，例如 /etc/xdg/quickshell/noctalia-shell
+        while IFS= read -r config_dir; do
+            if [[ -d "$config_dir/quickshell/noctalia-shell" ]]; then
+                printf '%s\n' "v4"
+                return 0
+            fi
+        done < <(printf '%s' "$config_dirs" | tr ':' '\n')
+    fi
+
+    printf '%s\n' "null"
+}
 
 deploy_noctalia() {
+    rm -r $HOME/.cache/noctalia*
+    noctalia_version="$(get_noctalia_version)"
+
+    case "$noctalia_version" in
+        v5)
+            log "执行 v5 部署逻辑"
+            deploy_noctaliav5
+            ;;
+        v4)
+            log "执行 v4 部署逻辑"
+            deploy_noctaliav4
+            ;;
+        null)
+            log "未检测到 Noctalia"
+            ;;
+    esac
+}
+
+deploy_noctaliav4() {
     log "[noctalia] Reading config..."
     local config_file="config.txt"
     local script_dir=$(dirname "$(readlink -f "$0")")
@@ -102,11 +157,45 @@ deploy_noctalia() {
     sed -i "s/\"name\": \"LOCATION\"/\"name\": \"$LOCATION_WEATHER\"/g" "$HOME/.config/noctalia/settings.json"
     sed -i "s/USERNAME/$(whoami)/g" "$HOME/.config/noctalia/settings.json"
     sed -i "s/^spawn-at-startup \"waybar\".*/\/\/spawn-at-startup \"waybar\"/" $HOME/.config/niri/config.kdl
-    sed -i 's/^    Super+Alt+L.*/    Super+Alt+L hotkey-overlay-title="Lock the Screen: noctalia-shell" { spawn-sh "qs -c noctalia-shell ipc call lockScreen lock"; }/' $HOME/.config/niri/config.kdl
+    sed -i 's#swaylock & niri msg action power-off-monitors#qs -c noctalia-shell ipc call lockScreen lock#g' $HOME/.config/niri/config.kdl
     sed -i 's/vicinae toggle/qs -c noctalia-shell ipc call launcher clipboard/g' $HOME/.config/niri/config.kdl
     sed -i 's/wallpaper\$/noctalia-overview\*/g' $HOME/.config/niri/config.kdl
     niri msg action spawn-sh -- "qs -c noctalia-shell > /dev/null 2>&1"
     systemctl --user restart --now noctalia.service 
+}
+
+deploy_noctaliav5() {
+    log "[noctalia] Reading config..."
+    local config_file="config.txt"
+    local script_dir=$(dirname "$(readlink -f "$0")")
+    local LOCATION_WEATHER=$(get_config_value "LOCATION_WEATHER" "Enter your LOCATION for weather: ")
+    
+    
+    log "[noctalia] Copying files..."
+    local include_dirs=("niri")
+    for dir in "${include_dirs[@]}"; do
+        cp -ruv dotconfig/$dir $HOME/.config/
+    done
+    local include_dirs=("noctalia")
+    for dir in "${include_dirs[@]}"; do
+        rm -rfv $HOME/.local/state/$dir
+        cp -ruv dotlocalstate/$dir $HOME/.local/state/
+    done
+    
+    log "[noctalia] Reloading services..."
+    systemctl --user daemon-reload
+    systemctl --user mask swaync.servicei
+
+    mkdir -p /tmp/noctalia/clipboard/entries
+    ln -s /tmp/noctalia/clipboard $HOME/.local/state/noctalia/clipboard
+    
+    sed -i "s#address = \"LOCATION\"#address = \"$LOCATION_WEATHER\"#g" "$HOME/.local/state/noctalia/settings.toml"
+    sed -i "s/USERNAME/$(whoami)/g" "$HOME/.local/state/noctalia/settings.toml"
+    sed -i "s#^spawn-at-startup \"waybar\".*#spawn-at-startup \"noctalia\"#" $HOME/.config/niri/config.kdl
+    sed -i 's#swaylock & niri msg action power-off-monitors#noctalia msg session lock#g' $HOME/.config/niri/config.kdl
+    sed -i 's/vicinae toggle/noctalia msg panel-toggle clipboard/g' $HOME/.config/niri/config.kdl
+    sed -i 's/wallpaper\$/noctalia-backdrop\*/g' $HOME/.config/niri/config.kdl
+    niri msg action spawn-sh -- "noctalia > /dev/null 2>&1"
 }
 
 deploy_waybar() {
